@@ -105,6 +105,8 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return false;
                 }
+                _dbContext.Otps.Remove(otp);
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
