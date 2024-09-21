@@ -1,4 +1,6 @@
-﻿using AlumniE_ConnectApi.Contract.Dtos.CollegeDto;
+﻿using AlumniE_ConnectApi.Contract.Dtos;
+using AlumniE_ConnectApi.Contract.Dtos.CollegeCourseDtos;
+using AlumniE_ConnectApi.Contract.Dtos.CollegeDto;
 using AlumniE_ConnectApi.Contract.Dtos.CollegeDtos;
 using AlumniE_ConnectApi.Contract.Dtos.CourseDtos;
 using AlumniE_ConnectApi.Contract.Interfaces;
@@ -25,7 +27,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             try
             {
                 var newCollege = new College
-                { 
+                {
                     Name = dto.Name,
                     Domain = dto.Domain,
                     Code = dto.Code,
@@ -56,34 +58,34 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                 var colleges = new List<GetCollegeDto>();
-                 colleges = await _dbContext.Colleges.Where(c => c.AdminId == adminId)
-                    .Select(c => new GetCollegeDto
-                    {
-                        Id = c.Id,
-                        Name = c.Name,
-                        CollegeType = c.CollegeType,
-                        EstablishmentYear = c.EstablishmentYear,
-                        Code = c.Code,
-                        Domain = c.Domain,
-                        NIRF_Ranking = c.NIRF_Ranking,
-                        Admin = c.Admin.Name,
-                        Country = c.Country.Name,
-                        State = c.State.Name,
-                        City = c.City.Name,
-                        Address = c.Address,
-                        Accreditation = c.Accreditation,
-                        Affiliated_University = c.University.Name,
-                        AuthorityNames = c.AuthorityNames,
-                        ContactEmails = c.ContactEmails,
-                        ContactNumber = c.ContactNumber,
-                        Links = c.Links,
-                        CountryId = c.CountryId,
-                        StateId = c.StateId,
-                        CityId = c.CityId,
-                        Affiliated_UniversityId = c.Affiliated_UniversityId
+                var colleges = new List<GetCollegeDto>();
+                colleges = await _dbContext.Colleges.Where(c => c.AdminId == adminId)
+                   .Select(c => new GetCollegeDto
+                   {
+                       Id = c.Id,
+                       Name = c.Name,
+                       CollegeType = c.CollegeType,
+                       EstablishmentYear = c.EstablishmentYear,
+                       Code = c.Code,
+                       Domain = c.Domain,
+                       NIRF_Ranking = c.NIRF_Ranking,
+                       Admin = c.Admin.Name,
+                       Country = c.Country.Name,
+                       State = c.State.Name,
+                       City = c.City.Name,
+                       Address = c.Address,
+                       Accreditation = c.Accreditation,
+                       Affiliated_University = c.University.Name,
+                       AuthorityNames = c.AuthorityNames,
+                       ContactEmails = c.ContactEmails,
+                       ContactNumber = c.ContactNumber,
+                       Links = c.Links,
+                       CountryId = c.CountryId,
+                       StateId = c.StateId,
+                       CityId = c.CityId,
+                       Affiliated_UniversityId = c.Affiliated_UniversityId
 
-                    }).ToListAsync();
+                   }).ToListAsync();
                 return colleges;
             }
             catch (Exception ex)
@@ -91,7 +93,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<Guid> AddProvidedCourse( Guid courseId , Guid collegeId)
+        public async Task<Guid> AddProvidedCourse(Guid courseId, Guid collegeId)
         {
             try
             {
@@ -104,7 +106,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 await _dbContext.SaveChangesAsync();
                 return newCollegeCourse.Id;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -127,15 +129,16 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<List<GetCourseDto>> GetCoursesByCollege(Guid collegeId)
+        public async Task<List<GetCollegeCourseDto>> GetCoursesByCollege(Guid collegeId)
         {
             try
             {
-                var colleges = new List<GetCourseDto>();
+                var colleges = new List<GetCollegeCourseDto>();
                 colleges = await _dbContext.CollegeCourses.Where(c => c.CollegeId == collegeId)
-                    .Select(c => new GetCourseDto
+                    .Select(c => new GetCollegeCourseDto
                     {
                         Id = c.Id,
+                        CourseId = c.CourseId,
                         Name = c.Course.Name,
                         Duration = c.Course.Duration,
                     }).AsNoTracking().ToListAsync();
@@ -147,5 +150,42 @@ namespace AlumniE_ConnectApi.Provider.Services
             }
         }
 
+        public async Task<IdAndNameDto?> GetCollegeNameAndIdByDomain(string domain)
+        {
+            try
+            {
+                var college = await _dbContext.Colleges.Where(c => c.Domain == domain)
+                    .Select(c => new IdAndNameDto
+                    {
+                        Id = c.Id,
+                        Name = c.Name
+                    })
+                    .FirstOrDefaultAsync();
+                return college;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<List<IdAndNameDto>> GetBranchesUnderCollegeCourse(Guid collegeCourseId)
+        {
+            try
+            {
+                var branches = new List<IdAndNameDto>();
+                branches = await _dbContext.CollegeCourseBranches.Where(b => b.CollegeCourseId == collegeCourseId)
+                    .Select(b => new IdAndNameDto
+                    {
+                        Id = b.Branch.Id,
+                        Name = b.Branch.Name
+                    }).ToListAsync();
+                return branches;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
