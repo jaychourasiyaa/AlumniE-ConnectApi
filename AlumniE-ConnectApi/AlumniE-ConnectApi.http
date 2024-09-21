@@ -1,0 +1,6 @@
+@AlumniE_ConnectApi_HostAddress = http://localhost:5155
+
+GET {{AlumniE_ConnectApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
