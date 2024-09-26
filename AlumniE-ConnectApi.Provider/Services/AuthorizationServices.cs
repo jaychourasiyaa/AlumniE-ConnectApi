@@ -24,7 +24,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             this._dbContext = _dbContext;
             this.configuration = configuration;
         }
-        public string GenerateToken(Guid Id, string Name, string Role)
+        public string GenerateToken(Guid id, string name, string role,string gmail)
         {
 
 
@@ -34,10 +34,10 @@ namespace AlumniE_ConnectApi.Provider.Services
             var claims = new[]
             {
                  //new Claim(ClaimTypes.Role, employee.Role.ToString()),
-                 new Claim("Name", Name),
-                 new Claim("Id", Id.ToString()),
-                 new Claim("Role" , Role),
-                 new Claim("Guid", Guid.NewGuid().ToString()),
+                 new Claim("Name", name),
+                 new Claim("Id", id.ToString()),
+                 new Claim("Role" , role),
+                 new Claim("Gmail",gmail)
 
              };
 
@@ -69,7 +69,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }
                     else
                     {
-                        token = GenerateToken(student.Id, student.Name, "Student");
+                        token = GenerateToken(student.Id, student.Name, "Student",student.Gmail);
                     }
                 }
                 else if (role == "Faculty")
@@ -83,7 +83,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }
                     else
                     {
-                        token = GenerateToken(faculty.Id, faculty.Name, "Faculty");
+                        token = GenerateToken(faculty.Id, faculty.Name, "Faculty",faculty.Gmail);
                     }
                 }
                 else if (role == "Admin")
@@ -97,7 +97,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }
                     else
                     {
-                        token = GenerateToken(admin.Id, admin.Name, "Admin");
+                        token = GenerateToken(admin.Id, admin.Name, "Admin",admin.Gmail);
                     }
                 }
                 else

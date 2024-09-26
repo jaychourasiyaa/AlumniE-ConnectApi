@@ -85,7 +85,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                        CityId = c.CityId,
                        Affiliated_UniversityId = c.Affiliated_UniversityId
 
-                   }).ToListAsync();
+                   }).AsNoTracking().ToListAsync();
                 return colleges;
             }
             catch (Exception ex)
@@ -160,6 +160,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                         Id = c.Id,
                         Name = c.Name
                     })
+                    .AsNoTracking()
                     .FirstOrDefaultAsync();
                 return college;
 
@@ -179,7 +180,9 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         Id = b.Branch.Id,
                         Name = b.Branch.Name
-                    }).ToListAsync();
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
                 return branches;
             }
             catch (Exception ex)

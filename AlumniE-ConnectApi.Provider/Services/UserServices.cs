@@ -16,18 +16,37 @@ namespace AlumniE_ConnectApi.Provider.Services
     public class UserServices : IUserServices
     {
         private readonly dbContext _dbContext;
-        public UserServices(dbContext db)
+        private readonly IJwtServices jwtServices;
+        public UserServices(dbContext _dbContext, IJwtServices jwtServices)
         {
-            _dbContext = db;
+            this._dbContext = _dbContext;
+            this.jwtServices = jwtServices;
         }
         public async Task<Admin> GetUser()
         {
             try
             {
-                var admin = await _dbContext.Admins.Where(a => a.Name == "Vishwesh Jain").FirstOrDefaultAsync();
+                
+                var admin = await _dbContext.Admins.Where(a => a.Name == "Vishwesh Jain").AsNoTracking().FirstOrDefaultAsync();
                 return admin;
             }
             catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> checkStudentAlreadyExists( string gmail)
+        {
+            try
+            {
+                var alreadyExists = await _dbContext.Students.FirstOrDefaultAsync( s=> s.Gmail == gmail );
+                if (alreadyExists != null )
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch( Exception ex)
             {
                 throw ex;
             }
@@ -36,6 +55,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
+                
                 var newStudent = new Student
                 {
                     Name = dto.Name,

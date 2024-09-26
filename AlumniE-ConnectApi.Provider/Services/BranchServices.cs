@@ -50,7 +50,9 @@ namespace AlumniE_ConnectApi.Provider.Services
                     Id = c.Id,
                     Name = c.Name,
                     
-                }).ToListAsync();
+                })
+                .AsNoTracking()
+                .ToListAsync();
                 return branches;
 
             }

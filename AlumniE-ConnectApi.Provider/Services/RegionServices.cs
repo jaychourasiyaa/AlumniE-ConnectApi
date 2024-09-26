@@ -28,7 +28,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         Id = r.Id,
                         Name = r.Name,
-                    }).ToListAsync();
+                    }).AsNoTracking().ToListAsync();
                 regions = regions != null ? regions : new List<GetRegionDto>();
                 return regions;
             }

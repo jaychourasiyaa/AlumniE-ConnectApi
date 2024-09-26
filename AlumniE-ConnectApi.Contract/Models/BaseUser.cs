@@ -35,5 +35,6 @@ namespace AlumniE_ConnectApi.Contract.Models
         public Guid? CityId { get; set; }
         [ForeignKey(nameof(CityId))]
         public Region City { get; set; }
+
     }
 }

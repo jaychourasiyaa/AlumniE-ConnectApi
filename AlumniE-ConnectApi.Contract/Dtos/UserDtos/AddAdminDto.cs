@@ -15,7 +15,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.UserDtos
         public required string Name { get; set; }
 
         [Required(ErrorMessage = "Gmail is a required field")]
-        [RegularExpression(@"^[\w\.-]+@[A-Za-z0-9\.-]+\.[A-Za-z]{2,}$", ErrorMessage = "The Email field is not a valid e-mail address.")]
+        [RegularExpression(@"^[\w\.-]+@[a-z0-9\.-]+\.[a-z]{2,}$", ErrorMessage = "The Email field is not a valid e-mail address.")]
         public required string Gmail { get; set; }
 
         [Required(ErrorMessage = "Password is a required field")]

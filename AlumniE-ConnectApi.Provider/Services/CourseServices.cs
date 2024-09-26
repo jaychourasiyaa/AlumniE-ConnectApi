@@ -53,7 +53,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     Id = c.Id,
                     Name = c.Name,
                     Duration = c.Duration,
-                }).ToListAsync();
+                }).AsNoTracking().ToListAsync();
                 return courses;
 
             }

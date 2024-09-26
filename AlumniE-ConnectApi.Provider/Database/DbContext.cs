@@ -25,5 +25,9 @@ namespace AlumniE_ConnectApi.Provider.Database
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Otp> Otps { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogComment> BlogsComments { get; set; }
+        public DbSet<Tag> Tags { get; set; }
     }
 }

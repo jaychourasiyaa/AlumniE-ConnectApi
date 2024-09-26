@@ -26,11 +26,15 @@ namespace AlumniE_ConnectApi.Provider
             builder.Services.AddScoped<ICourseServices, CourseServices>();
             builder.Services.AddScoped<IEmailServices, EmailServices>();
             builder.Services.AddScoped<IBranchServices, BranchServices>();
+            builder.Services.AddScoped<IJwtServices, JwtServices>();
+            builder.Services.AddScoped<IEventServices, EventServices>();
+            builder.Services.AddScoped<ITagServices, TagServices>();
+            builder.Services.AddScoped<IBlogServices, BlogServices>();
             //swagger services
             builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "EmployeeManagementAPI", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Alumni E-Connect Api's", Version = "v1" });
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
