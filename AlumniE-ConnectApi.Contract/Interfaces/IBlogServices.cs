@@ -10,5 +10,6 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
     public interface IBlogServices
     {
         public Task<Guid> AddBlog(AddBlogDto dto);
+        public Task<List<GetBlogDto>> GetAllBlogs();
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AlumniE_ConnectApi.Contract.Models
 {
-    public class BaseUser
+    public class BaseUser 
     {
         public required string Name { get; set; }
         public required string Gmail { get; set; }
@@ -26,7 +26,7 @@ namespace AlumniE_ConnectApi.Contract.Models
         public Guid? BranchId { get; set; }
         [ForeignKey(nameof(BranchId))]
         public Branch Branch { get; set; }
-        public Guid? CountryId { get; set; }
+        public Guid? CountryId { get; set; } = Guid.Parse("578DACF0-E6DE-4AE4-B044-E17C01045CB0");
         [ForeignKey(nameof(CountryId))]
         public Region Country { get; set; }
         public Guid? StateId { get; set; }
@@ -35,6 +35,7 @@ namespace AlumniE_ConnectApi.Contract.Models
         public Guid? CityId { get; set; }
         [ForeignKey(nameof(CityId))]
         public Region City { get; set; }
+        public DateTime CreatedOn { get; set; } = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
 
     }
 }

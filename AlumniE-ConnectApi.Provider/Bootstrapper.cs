@@ -30,6 +30,7 @@ namespace AlumniE_ConnectApi.Provider
             builder.Services.AddScoped<IEventServices, EventServices>();
             builder.Services.AddScoped<ITagServices, TagServices>();
             builder.Services.AddScoped<IBlogServices, BlogServices>();
+            builder.Services.AddScoped<IBlogCommentServices, BlogCommentServices>();
             //swagger services
             builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(opt =>

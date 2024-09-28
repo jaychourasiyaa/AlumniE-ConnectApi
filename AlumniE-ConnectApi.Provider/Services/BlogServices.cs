@@ -2,10 +2,12 @@
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace AlumniE_ConnectApi.Provider.Services
     {
         private readonly dbContext _dbContext;
         private readonly IJwtServices jwtServices;
-        public BlogServices( dbContext _dbContext, IJwtServices jwtServices)
+        public BlogServices(dbContext _dbContext, IJwtServices jwtServices)
         {
             this.jwtServices = jwtServices;
             this._dbContext = _dbContext;
@@ -28,7 +30,8 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     Description = dto.Description,
                     Tags = dto.Tags,
-                    ImageUrls = dto.ImageUrls
+                    ImageUrls = dto.ImageUrls,
+                    CreatedBy = jwtServices.Id
 
                 };
                 await _dbContext.Blogs.AddAsync(newBlog);
@@ -40,11 +43,26 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        private List<string> ExtractLinks(string Description)
-{
-    var links = new List<string>();
-    return links;
-}
+       public async Task<List<GetBlogDto>> GetAllBlogs()
+        {
+            try
+            {
+                var blogs = new List<GetBlogDto>();
+                 blogs = await _dbContext.Blogs.Select(
+                    b => new GetBlogDto
+                    {
+                        Id = b.Id,
+                        Description = b.Description,
+                        Tags = b.Tags,
+                        ImageUrls = b.ImageUrls,
+                    }).ToListAsync();
+                return blogs;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
-    
+
 }

@@ -37,7 +37,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpGet("GetAllCollegeByAdminId{adminId:guid}")]
+        [HttpGet("GetAllCollegeByAdminId/{adminId:guid}")]
         public async Task<ActionResult<ApiResponse<List<GetCollegeDto>>>> Get(Guid adminId)
         {
             var response = new ApiResponse<List<GetCollegeDto>>();
@@ -54,7 +54,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("AddCourse{courseId:guid}/{collegeId:guid}")]
+        [HttpPost("AddCourse/{courseId:guid}/{collegeId:guid}")]
         public async Task<ActionResult<ApiResponse<Guid>>> AddCourse(Guid courseId, Guid collegeId)
         {
             var response = new ApiResponse<Guid>();
@@ -72,7 +72,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("AddBranch{collegeCourseId:guid}/{branchId:guid}")]
+        [HttpPost("AddBranch/{collegeCourseId:guid}/{branchId:guid}")]
         public async Task<ActionResult<ApiResponse<Guid>>> AddBranch(Guid collegeCourseId, Guid branchId)
         {
             var response = new ApiResponse<Guid>();
@@ -90,7 +90,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpGet("GetCourse{collegeId:guid}")]
+        [HttpGet("GetCourse/{collegeId:guid}")]
         public async Task<ActionResult<ApiResponse<List<GetCollegeCourseDto>>>> GetCourses(Guid collegeId)
         {
             var response = new ApiResponse<List<GetCollegeCourseDto>>();
