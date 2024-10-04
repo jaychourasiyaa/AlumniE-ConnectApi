@@ -1,4 +1,5 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
@@ -72,7 +73,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
@@ -106,7 +107,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }
                     await _dbContext.SaveChangesAsync();
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (faculty == null)
@@ -155,7 +156,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
@@ -163,7 +164,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                         return -1;
                     }
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (faculty == null)

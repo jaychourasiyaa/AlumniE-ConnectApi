@@ -1,9 +1,7 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos.BlogCommentDtos;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Responses;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace AlumniE_ConnectApi.Controllers
 {
@@ -22,20 +20,20 @@ namespace AlumniE_ConnectApi.Controllers
             try
             {
                 var blogComments = await blogCommentServices.GetBlogComment(id);
-                return Ok(new ApiResponse<List<GetBlogCommentsDto>>(true,"Fetched all comments",blogComments));
+                return Ok(new ApiResponse<List<GetBlogCommentsDto>>(true, "Fetched all comments", blogComments));
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse<int>(false,ex.Message,1));
+                return BadRequest(new ApiResponse<int>(false, ex.Message, 1));
             }
         }
         [HttpPost("blogId/{id:guid}")]
-        public async Task<ActionResult<ApiResponse<Guid>>> Add(AddBlogCommmentDto dto , Guid id)
+        public async Task<ActionResult<ApiResponse<Guid>>> Add(AddBlogCommmentDto dto, Guid id)
         {
             var response = new ApiResponse<Guid>();
             try
             {
-                var blogId = await blogCommentServices.AddComment(dto,id);
+                var blogId = await blogCommentServices.AddComment(dto, id);
                 response.Message = "Added Comment in Blog";
                 response.Data = blogId;
                 return Ok(response);
@@ -47,14 +45,14 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPut("blogId/{id:guid}")]
-        public async Task<ActionResult<ApiResponse<bool>>> Update(UpdateBlogCommentDto dto ,Guid id)
+        [HttpPut("comment/{id:guid}")]
+        public async Task<ActionResult<ApiResponse<bool>>> Update(UpdateBlogCommentDto dto, Guid id)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await blogCommentServices.UpdateComment(dto,id);
-                if( result == -1)
+                var result = await blogCommentServices.UpdateComment(dto, id);
+                if (result == -1)
                 {
                     response.Message = "Blog not found";
                     return NotFound(response);
@@ -64,7 +62,7 @@ namespace AlumniE_ConnectApi.Controllers
                     response.Message = "Blog Comment is unaccessible to update";
                     return Conflict(response);
                 }
-                else if ( result == -3)
+                else if (result == -3)
                 {
                     response.Message = "Nothing to update in comment";
                     return NotFound(response);

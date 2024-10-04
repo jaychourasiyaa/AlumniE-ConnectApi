@@ -107,14 +107,14 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(new ApiResponse<int>(false, ex.Message, 0));
             }
         }
-        
+
         [HttpDelete("DeleteTagFromBlog/{blogId}")]
-        public async Task<ActionResult<ApiResponse<bool>>> DeleteTag( Guid blogId,Guid tagId)
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteTag(Guid blogId, Guid tagId)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await tagServices.DeleteTagFromBlog(blogId,tagId);
+                var result = await tagServices.DeleteTagFromBlog(blogId, tagId);
                 if (result == -1)
                 {
                     response.Message = "Blog not found";

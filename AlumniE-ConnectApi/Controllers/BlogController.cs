@@ -75,14 +75,14 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        
+
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<ApiResponse<bool>>> Update(UpdateBlog dto,Guid id)
+        public async Task<ActionResult<ApiResponse<bool>>> Update(UpdateBlog dto, Guid id)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await blogServices.UpdateBlogDescription(dto,id);
+                var result = await blogServices.UpdateBlogDescription(dto, id);
                 if (result == -1)
                 {
                     response.Message = "Blog Not Found";
@@ -106,7 +106,7 @@ namespace AlumniE_ConnectApi.Controllers
                 }
             }
         }
-        
+
         [HttpDelete("{Id:guid}")]
         public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid Id)
         {

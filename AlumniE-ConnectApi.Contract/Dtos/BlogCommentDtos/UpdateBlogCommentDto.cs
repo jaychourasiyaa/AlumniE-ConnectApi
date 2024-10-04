@@ -9,8 +9,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.BlogCommentDtos
 {
     public class UpdateBlogCommentDto
     {
-        [Required(ErrorMessage = "Comment Id is a required field")]
-        public Guid CommentId { get; set; }
+        
         [Required (ErrorMessage = "Description is a required")]
         [MinLength (2)]
         public string Comment { get; set; }

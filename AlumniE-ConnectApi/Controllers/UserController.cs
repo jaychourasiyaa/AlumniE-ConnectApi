@@ -20,6 +20,20 @@ namespace AlumniE_ConnectApi.Controllers
             this.userServices = userServices;
             this.emailServices = emailServices;
         }
+        /*[Authorize]*/
+        [HttpGet("GetLoginUserInfo")]
+        public async Task<ActionResult<ApiResponse<UserDetailsDto>>> GetLoginUser()
+        {
+            try
+            {
+                var info = await userServices.GetLoginUserInfo();
+                return Ok(new ApiResponse<UserDetailsDto>(true, "User Info fetched", info));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ApiResponse<int>(false, ex.Message, 0));
+            }
+        }
         //[Authorize]
         [HttpGet("GetStudentDetails/{id:guid}")]
         public async Task<ActionResult<ApiResponse<GetStudentDto>>> GetStudent(Guid id)

@@ -10,6 +10,7 @@ namespace AlumniE_ConnectApi.Contract.Enums
     {
         Student = 0,
         Faculty = 1,
-        Admin = 2
+        Admin = 2,
+       
     }
 }

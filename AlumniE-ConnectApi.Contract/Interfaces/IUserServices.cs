@@ -12,6 +12,7 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface IUserServices
     {
+        public Task<UserDetailsDto> GetLoginUserInfo();
         public Task<GetStudentDto> GetStudentDetails(Guid id);
         public Task<GetFacultyDto> GetFacultyDetails(Guid id);
         public Task<List<IdAndNameDto>> GetAllAdmin();

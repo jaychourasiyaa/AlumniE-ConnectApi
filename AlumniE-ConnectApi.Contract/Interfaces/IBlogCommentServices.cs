@@ -12,7 +12,7 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
         public Task<List<GetBlogCommentsDto>> GetBlogComment(Guid blogId);
 
         public Task <Guid> AddComment(AddBlogCommmentDto dto,Guid blogId);
-        public Task <int> UpdateComment(UpdateBlogCommentDto dto,Guid blogId);
+        public Task <int> UpdateComment(UpdateBlogCommentDto dto,Guid commentId);
         public Task <int> Delete(Guid id);
     }
 }

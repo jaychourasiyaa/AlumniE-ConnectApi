@@ -1,6 +1,7 @@
 ﻿
 using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
@@ -16,6 +17,44 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             this._dbContext = _dbContext;
             this.jwtServices = jwtServices;
+        }
+        public async Task<UserDetailsDto> GetLoginUserInfo()
+        {
+            try
+            {
+                if(jwtServices.Role == UserRole.Faculty)
+                {
+                    var facultyInfo = await _dbContext.Faculties.Where(f => f.Id == jwtServices.Id).
+                        Select(f=> new UserDetailsDto
+                        {
+                            Id = f.Id,
+                            Name = f.Name,
+                            Role = UserRole.Faculty,
+                            ImageUrl = f.ImageUrl,
+                            HeadLine = f.Headline
+                        }).FirstOrDefaultAsync();
+                    return facultyInfo;
+                    
+                }
+                else if (jwtServices.Role == UserRole.Student)
+                {
+                    var studentInfo = await _dbContext.Students.Where(f => f.Id == jwtServices.Id).
+                        Select(f => new UserDetailsDto
+                        {
+                            Id = f.Id,
+                            Name = f.Name,
+                            Role = UserRole.Student,
+                            ImageUrl = f.ImageUrl,
+                            HeadLine = f.Headline
+                        }).FirstOrDefaultAsync();
+                    return studentInfo;
+                }
+                return new UserDetailsDto();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
         public async Task<GetStudentDto> GetStudentDetails(Guid id)
         {
@@ -48,7 +87,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                         IsActive = s.IsActive,
                         ContactNumber = s.ContactNumber,
                         Password = s.Password,
-                        ProfilePictureUrl = s.ProfilePictureUrl
+                        ProfilePictureUrl = s.ImageUrl
                     })
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
@@ -88,7 +127,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                         IsActive = s.IsActive,
                         ContactNumber = s.ContactNumber,
                         Password = s.Password,
-                        ProfilePictureUrl = s.ProfilePictureUrl,
+                        ProfilePictureUrl = s.ImageUrl,
                         TeachingSince = s.TeachingSince
                     })
                     .AsNoTracking()
@@ -210,7 +249,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == jwtServices.Id && x.IsActive);
                     if (student == null)
@@ -223,7 +262,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                      }*/
                     return await ChangeUserDetailsAsync(student, dto);
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.FirstOrDefaultAsync(x => x.Id == jwtServices.Id && x.IsActive);
                     if (faculty == null)
@@ -250,7 +289,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
@@ -263,7 +302,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }*/
                     return await ChangePasswordAsync(student, dto.OldPassword, dto.NewPassword);
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (faculty == null)
@@ -276,7 +315,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                      }*/
                     return await ChangePasswordAsync(faculty, dto.OldPassword, dto.NewPassword);
                 }
-                else if (jwtServices.Role == "Admin")
+                else if (jwtServices.Role == UserRole.Admin)
                 {
                     var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (admin == null)
@@ -304,7 +343,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
@@ -315,9 +354,9 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         return -2;
                     }*/
-                    student.ProfilePictureUrl = dto.Url;
+                    student.ImageUrl = dto.Url;
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if ((faculty == null))
@@ -328,9 +367,9 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         return -2;
                     }*/
-                    faculty.ProfilePictureUrl = dto.Url;
+                    faculty.ImageUrl = dto.Url;
                 }
-                else if (jwtServices.Role == "Admin")
+                else if (jwtServices.Role == UserRole.Admin)
                 {
                     var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (admin == null)
@@ -341,7 +380,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         return -2;
                     }*/
-                    admin.ProfilePictureUrl = dto.Url;
+                    admin.ImageUrl = dto.Url;
                 }
                 else
                 {
@@ -492,7 +531,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                else if (jwtServices.Role != "Faculty" && jwtServices.Role != "Admin" && jwtServices.Id != student.Id)
+                else if (jwtServices.Role != UserRole.Faculty && jwtServices.Role != UserRole.Admin && jwtServices.Id != student.Id)
                 {
                     return -2;
                 }
@@ -514,7 +553,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                else if (jwtServices.Role != "Admin" && jwtServices.Id != faculty.Id)
+                else if (jwtServices.Role != UserRole.Admin && jwtServices.Id != faculty.Id)
                 {
                     return -2;
                 }

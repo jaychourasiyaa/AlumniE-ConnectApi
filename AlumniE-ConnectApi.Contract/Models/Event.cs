@@ -20,8 +20,8 @@ namespace AlumniE_ConnectApi.Contract.Models
         public string Location { get; set; }
         public DateTime Registration_Deadline { get; set; }
         public EventStatus Status { get; set; } = EventStatus.Created;
-        public string? ApprovedBy_Name { get; set; }
-        public string CreatedBy_Name { get; set; }
+        public string? ApprovedByName { get; set; }
+        public string CreatedByName { get; set; }
 
     }
 }

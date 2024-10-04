@@ -36,12 +36,12 @@ namespace AlumniE_ConnectApi.Provider.Services
                     EndTime = TimeOnly.FromDateTime(dto.EndDate),
                     Location = dto.Location,
                     Registration_Deadline = dto.Registration_Deadline,
-                    CreatedBy_Name = jwtServices.Name,
+                    CreatedByName = jwtServices.Name,
                     CreatedBy = jwtServices.Id
                 };
-                if (jwtServices.Role == "Admin" || jwtServices.Role == "Faculty")
+                if (jwtServices.Role == UserRole.Admin || jwtServices.Role == UserRole.Faculty)
                 {
-                    newEvent.ApprovedBy_Name = jwtServices.Name;
+                    newEvent.ApprovedByName = jwtServices.Name;
                     newEvent.UpdatedBy = jwtServices.Id;
                     newEvent.UpdatedOn = DateTime.Now;
                     newEvent.Status = EventStatus.Approved;
@@ -60,7 +60,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty")
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty)
                 {
                     return -1;
                 }
@@ -71,7 +71,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 }
                 toApproveEvent.Status = EventStatus.Approved;
                 toApproveEvent.UpdatedBy = jwtServices.Id;
-                toApproveEvent.ApprovedBy_Name = jwtServices.Name;
+                toApproveEvent.ApprovedByName = jwtServices.Name;
                 toApproveEvent.UpdatedOn = DateTime.Now;
                 return 1;
             }
@@ -97,15 +97,15 @@ namespace AlumniE_ConnectApi.Provider.Services
                     Location = e.Location,
                     Registration_Deadline = e.Registration_Deadline,
                     Status = e.Status,
-                    ApprovedBy_Name = e.ApprovedBy_Name,
+                    ApprovedBy_Name = e.ApprovedByName,
                     CreatedBy= e.CreatedBy,
-                    CreatedBy_Name = e.CreatedBy_Name,
+                    CreatedBy_Name = e.CreatedByName,
                     CreatedOn = e.CreatedOn,
                     UpdatedOn = e.UpdatedOn,
                     UpdatedBy = e.UpdatedBy
 
                 }).AsNoTracking().AsQueryable();
-                if(jwtServices.Role == "Student")
+                if(jwtServices.Role == UserRole.Student)
                 {
                     events = await query.Where( e=> e.Status == EventStatus.Approved || e.CreatedBy == jwtServices.Id).ToListAsync();
                 }

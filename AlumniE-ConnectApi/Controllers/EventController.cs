@@ -1,4 +1,5 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos.EventDtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Responses;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,7 @@ namespace AlumniE_ConnectApi.Controllers
             try
             {
                 var eventId = await eventServices.AddEvent(dto);
-                if (jwtServices.Role == "Admin" || jwtServices.Role == "Faculty")
+                if (jwtServices.Role == UserRole.Admin || jwtServices.Role == UserRole.Faculty)
                 {
                     response.Message = "Event Created and Published Successfully";
                 }

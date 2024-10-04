@@ -13,7 +13,7 @@ namespace AlumniE_ConnectApi.Contract.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public string  ProfilePictureUrl { get; set; } = "https://cdn-icons-png.flaticon.com/512/3934/3934107.png";
+        public string  ImageUrl { get; set; } = "https://cdn-icons-png.flaticon.com/512/3934/3934107.png";
         public required string Name { get; set; }
         public required string Gmail { get; set; }
         public required string Password { get; set; }

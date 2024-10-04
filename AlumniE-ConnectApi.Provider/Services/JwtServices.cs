@@ -1,4 +1,5 @@
-﻿using AlumniE_ConnectApi.Contract.Interfaces;
+﻿using AlumniE_ConnectApi.Contract.Enums;
+using AlumniE_ConnectApi.Contract.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         public string Name { get; set; }
         public Guid Id { get; set; }
         public string Gmail { get; set; }
-        public string Role { get; set; }
+        public UserRole Role { get; set; } 
         public JwtServices(IHttpContextAccessor httpContextAccessor)
         {
             var user = httpContextAccessor.HttpContext?.User;
@@ -28,7 +29,12 @@ namespace AlumniE_ConnectApi.Provider.Services
                 var GmailClaim = user.Claims.FirstOrDefault(c => c.Type == "Gmail")?.Value;
                 Gmail = GmailClaim != null ? GmailClaim : string.Empty;
                 var RoleClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                Role = RoleClaim != null ? RoleClaim : string.Empty;
+                // Extract and map 'Role' claim
+                var roleClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (Enum.TryParse(typeof(UserRole), roleClaim, true, out var role))
+                {
+                    Role = (UserRole)role;
+                }
                 
             }
         }

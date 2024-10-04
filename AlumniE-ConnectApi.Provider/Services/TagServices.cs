@@ -1,5 +1,6 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.BlogDtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
@@ -23,11 +24,11 @@ namespace AlumniE_ConnectApi.Provider.Services
             this._dbContext = _dbContext;
             this.jwtServices = jwtServices;
         }
-        public async Task<int> AddTags(List<string> tags,Guid blogId)
+        public async Task<int> AddTags(List<string> tags, Guid blogId)
         {
             try
             {
-                if (jwtServices.Role == "Student")
+                if (jwtServices.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
@@ -35,7 +36,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                         return -1;
                     }
                 }
-                else if (jwtServices.Role == "Faculty")
+                else if (jwtServices.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (faculty == null)
@@ -65,7 +66,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     tagsId.Add(newTag.Id);
                 }
                 await _dbContext.SaveChangesAsync();
-                await AddTagsToBlog(tagsId,blogId);
+                await AddTagsToBlog(tagsId, blogId);
                 return 1;
             }
             catch (Exception ex)
@@ -73,41 +74,41 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<int> AddTagsToBlog(List<Guid> tags,Guid blogId)
+        public async Task<int> AddTagsToBlog(List<Guid> tags, Guid blogId)
         {
             try
             {
-                 var blog = await _dbContext.Blogs.Where(b => b.Id == blogId).FirstOrDefaultAsync();
-                    if (blog == null)
+                var blog = await _dbContext.Blogs.Where(b => b.Id == blogId).FirstOrDefaultAsync();
+                if (blog == null)
+                {
+                    return -1;
+                }
+                foreach (var tagId in tags)
+                {
+                    var tag = await _dbContext.Tags.Where(t => t.Id == tagId).FirstOrDefaultAsync();
+                    if (tag == null)
                     {
-                        return -1;
+                        return -2;
                     }
-                    foreach (var tagId in tags)
+                    else
                     {
-                        var tag = await _dbContext.Tags.Where(t => t.Id == tagId).FirstOrDefaultAsync();
-                        if (tag == null)
+                        var tagAlreadyExists = await _dbContext.BlogsTags.Where(t => t.TagId == tagId && t.BlogId == blogId).FirstOrDefaultAsync();
+                        if (tagAlreadyExists != null)
                         {
-                            return -2;
+                            return -3;
                         }
-                        else
-                        {
-                            var tagAlreadyExists = await _dbContext.BlogsTags.Where(t => t.TagId == tagId && t.BlogId == blogId).FirstOrDefaultAsync();
-                            if (tagAlreadyExists != null)
-                            {
-                                return -3;
-                            }
-                        }
                     }
-                    foreach (var tagId in tags)
+                }
+                foreach (var tagId in tags)
+                {
+                    var newBlogTag = new BlogTag
                     {
-                        var newBlogTag = new BlogTag
-                        {
-                            BlogId = blogId,
-                            TagId = tagId,
-                        };
-                        await _dbContext.BlogsTags.AddAsync(newBlogTag);
-                    }
-                    await _dbContext.SaveChangesAsync();
+                        BlogId = blogId,
+                        TagId = tagId,
+                    };
+                    await _dbContext.BlogsTags.AddAsync(newBlogTag);
+                }
+                await _dbContext.SaveChangesAsync();
                 return 1;
             }
             catch (Exception ex)
@@ -124,7 +125,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && blog.CreatedBy != jwtServices.Id)
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blog.CreatedByFacultyId && jwtServices.Id != blog.CreatedByStudentId)
                 {
                     return -2;
                 }
@@ -133,7 +134,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -3;
                 }
-                blog.UpdatedBy = jwtServices.Id;
+               
                 blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
                 _dbContext.BlogsTags.Remove(blogTag);
                 await _dbContext.SaveChangesAsync();

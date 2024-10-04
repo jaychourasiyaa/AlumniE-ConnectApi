@@ -1,9 +1,10 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.BlogDtos;
+using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlumniE_ConnectApi.Provider.Services
@@ -21,21 +22,23 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                
+
                 var blogs = await _dbContext.Blogs
-                    .Select(
-                    b => new GetBlogDto
+                    .Select(b => new GetBlogDto
                     {
                         Id = b.Id,
                         Description = b.Description,
                         ImageUrls = b.ImageUrls,
-                        CreatedBy = b.CreatedBy,
-                        UpdatedBy = b.UpdatedBy,
                         CreatedOn = b.CreatedOn,
                         UpdatedOn = b.UpdatedOn,
-                        CreatedByName = b.CreatedByName,
-                        UserProfileHeadLine = b.UserProfileHeadline,
-                        UserProfilePictureUrl = b.UserProfilePictureUrl,
+                        User = new UserDetailsDto
+                        {
+                            Id = b.CreatedByStudentId != null ? b.CreatedByStudentId : b.CreatedByFacultyId,
+                            Role = b.Role,
+                            Name = b.Student != null ? b.Student.Name : b.Faculty.Name,
+                            HeadLine = b.Student != null ? b.Student.Headline : b.Faculty.Headline,
+                            ImageUrl = b.Student != null ? b.Student.ImageUrl : b.Faculty.ImageUrl
+                        },
                         Tags = b.Tags
                         .Select(t => new IdAndNameDto
                         {
@@ -62,13 +65,16 @@ namespace AlumniE_ConnectApi.Provider.Services
                         Id = b.Id,
                         Description = b.Description,
                         ImageUrls = b.ImageUrls,
-                        CreatedBy = b.CreatedBy,
-                        UpdatedBy = b.UpdatedBy,
                         CreatedOn = b.CreatedOn,
                         UpdatedOn = b.UpdatedOn,
-                        CreatedByName = b.CreatedByName,
-                        UserProfileHeadLine = b.UserProfileHeadline,
-                        UserProfilePictureUrl = b.UserProfilePictureUrl,
+                        User = new UserDetailsDto
+                        {
+                            Id = b.CreatedByStudentId != null ? b.CreatedByStudentId : b.CreatedByFacultyId,
+                            Role = b.Role,
+                            Name = b.Student != null ? b.Student.Name : b.Faculty.Name,
+                            HeadLine = b.Student != null ? b.Student.Headline : b.Faculty.Headline,
+                            ImageUrl = b.Student != null ? b.Student.ImageUrl : b.Faculty.ImageUrl
+                        },
                         Tags = b.Tags
                         .Select(t => new IdAndNameDto
                         {
@@ -94,22 +100,11 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     Description = dto.Description,
                     ImageUrls = dto.ImageUrls,
-                    CreatedBy = jwtServices.Id,
                     Role = jwtServices.Role,
-                    CreatedByName = jwtServices.Name
+                    CreatedByStudentId = jwtServices.Role == UserRole.Student ? jwtServices.Id : null,
+                    CreatedByFacultyId = jwtServices.Role == UserRole.Faculty ? jwtServices.Id : null,
                 };
-                if (student != null)
-                {
-                    newBlog.CreatedByName = student.Name;
-                    newBlog.UserProfileHeadline = student.ProfileHeadline;
-                    newBlog.UserProfilePictureUrl = student.ProfilePictureUrl;
-                }
-                else if (faculty != null)
-                {
-                    newBlog.CreatedByName = faculty.Name;
-                    newBlog.UserProfileHeadline = faculty.ProfileHeadline;
-                    newBlog.UserProfilePictureUrl = faculty.ProfilePictureUrl;
-                }
+               
                 await _dbContext.Blogs.AddAsync(newBlog);
                 await _dbContext.SaveChangesAsync();
                 foreach (var tagId in dto.Tags)
@@ -129,7 +124,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-       /* public async Task<int> AddTagsInBlog(AddTagsInBlogDto dto)
+        public async Task<int> AddTagsInBlog(AddTagsInBlogDto dto)
         {
             try
             {
@@ -138,7 +133,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                if( jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != blog.CreatedBy)
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blog.CreatedByFacultyId && jwtServices.Id != blog.CreatedByStudentId)
                 {
                     return -2;
                 }
@@ -159,31 +154,6 @@ namespace AlumniE_ConnectApi.Provider.Services
                         await _dbContext.BlogsTags.AddAsync(newBlogTag);
                     }
                 }
-                blog.UpdatedBy = jwtServices.Id;
-                blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
-                await _dbContext.SaveChangesAsync();
-                return 1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }*/
-        public async Task<int> UpdateBlogDescription(UpdateBlog dto,Guid blogId)
-        {
-            try
-            {
-                var blog = await _dbContext.Blogs.Where(b => b.Id == blogId).FirstOrDefaultAsync();
-                if (blog == null)
-                {
-                    return -1;
-                }
-                if( jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != blog.CreatedBy)
-                {
-                    return -2;
-                }
-                blog.Description = dto.Description;
-                blog.UpdatedBy = jwtServices.Id;
                 blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
                 await _dbContext.SaveChangesAsync();
                 return 1;
@@ -193,7 +163,30 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        /*public async Task<int> DeleteTagFromBlog(DeleteTagFromBlogDto dto)
+        public async Task<int> UpdateBlogDescription(UpdateBlog dto, Guid blogId)
+        {
+            try
+            {
+                var blog = await _dbContext.Blogs.Where(b => b.Id == blogId).FirstOrDefaultAsync();
+                if (blog == null)
+                {
+                    return -1;
+                }
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blog.CreatedByFacultyId && jwtServices.Id != blog.CreatedByStudentId)
+                {
+                    return -2;
+                }
+                blog.Description = dto.Description;
+                blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
+                await _dbContext.SaveChangesAsync();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> DeleteTagFromBlog(DeleteTagFromBlogDto dto)
         {
             try
             {
@@ -202,7 +195,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                if( jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && blog.CreatedBy != jwtServices.Id)
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blog.CreatedByFacultyId && jwtServices.Id != blog.CreatedByStudentId)
                 {
                     return -2;
                 }
@@ -211,7 +204,6 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -3;
                 }
-                blog.UpdatedBy = jwtServices.Id;
                 blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
                 _dbContext.BlogsTags.Remove(blogTag);
                 await _dbContext.SaveChangesAsync();
@@ -221,7 +213,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             {
                 throw ex;
             }
-        }*/
+        }
         public async Task<int> DeleteBlog(Guid Id)
         {
             try
@@ -231,7 +223,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && blog.CreatedBy != jwtServices.Id)
+                if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blog.CreatedByFacultyId && jwtServices.Id != blog.CreatedByStudentId)
                 {
                     return -2;
                 }

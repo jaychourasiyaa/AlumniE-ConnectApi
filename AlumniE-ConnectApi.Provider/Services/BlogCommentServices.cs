@@ -1,5 +1,6 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos.BlogCommentDtos;
 using AlumniE_ConnectApi.Contract.Dtos.BlogDtos;
+using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
@@ -33,6 +34,13 @@ namespace AlumniE_ConnectApi.Provider.Services
                     {
                         CommentId = b.Id,
                         Comment = b.Comment,
+                        User = new UserInfo
+                        {
+                            Id = b.CreatedByStudentId != null ? b.CreatedByStudentId : b.CreatedByFacultyId,
+                            Role = b.Role,
+                            Name = b.Student != null ? b.Student.Name : b.Faculty.Name,
+                            ImageUrl = b.Student != null ? b.Student.ImageUrl : b.Faculty.ImageUrl
+                        },
 
                     }).ToListAsync();
                 return blogComments;
@@ -50,7 +58,9 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     BlogId = blogId,
                     Comment = dto.Comment,
-                    CreatedBy = jwtServices.Id
+                    Role = jwtServices.Role,
+                    CreatedByStudentId = jwtServices.Role == UserRole.Student ? jwtServices.Id : null,
+                    CreatedByFacultyId = jwtServices.Role == UserRole.Faculty ? jwtServices.Id : null,
                 };
                 await _dbContext.BlogsComments.AddAsync(newBlogComment);
                 await _dbContext.SaveChangesAsync();
@@ -61,17 +71,17 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<int> UpdateComment(UpdateBlogCommentDto dto ,Guid blogId)
+        public async Task<int> UpdateComment(UpdateBlogCommentDto dto ,Guid commentId)
         {
             try
             {
-                var blogComment = await _dbContext.BlogsComments.Where(b => b.Id == dto.CommentId && b.BlogId == blogId)
+                var blogComment = await _dbContext.BlogsComments.Where(b => b.Id == commentId)
                     .FirstOrDefaultAsync();
                 if (blogComment == null)
                 {
                     return -1;
                 }
-                else if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != blogComment.CreatedBy)
+                else if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blogComment.CreatedByFacultyId && jwtServices.Id != blogComment.CreatedByStudentId)
                 {
                     return -2;
                 }
@@ -80,7 +90,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     return -3;
                 }
                 blogComment.Comment = dto.Comment;
-                blogComment.UpdatedBy = jwtServices.Id;
+                
                 blogComment.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
                 await _dbContext.SaveChangesAsync();
                 return 1;
@@ -100,7 +110,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -1;
                 }
-                else if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != blogComment.CreatedBy)
+                else if (jwtServices.Role != UserRole.Admin && jwtServices.Role != UserRole.Faculty && jwtServices.Id != blogComment.CreatedByFacultyId && jwtServices.Id != blogComment.CreatedByStudentId)
                 {
                     return -2;
                 }

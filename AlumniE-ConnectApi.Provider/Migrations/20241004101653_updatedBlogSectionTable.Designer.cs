@@ -4,6 +4,7 @@ using AlumniE_ConnectApi.Provider.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlumniE_ConnectApi.Provider.Migrations
 {
     [DbContext(typeof(dbContext))]
-    partial class dbContextModelSnapshot : ModelSnapshot
+    [Migration("20241004101653_updatedBlogSectionTable")]
+    partial class updatedBlogSectionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,10 +35,6 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -48,6 +47,10 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePictureUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -112,17 +115,14 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("CreatedByFacultyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatedByStudentId")
+                    b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte>("Role")
-                        .HasColumnType("tinyint");
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -130,10 +130,6 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BlogId");
-
-                    b.HasIndex("CreatedByFacultyId");
-
-                    b.HasIndex("CreatedByStudentId");
 
                     b.ToTable("BlogsComments");
                 });
@@ -320,7 +316,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApprovedByName")
+                    b.Property<string>("ApprovedBy_Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Banner_Url")
@@ -329,7 +325,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedByName")
+                    b.Property<string>("CreatedBy_Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -453,13 +449,6 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Headline")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -468,6 +457,13 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileHeadline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePictureUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -619,13 +615,6 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Headline")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -637,6 +626,13 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileHeadline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePictureUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -739,19 +735,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Faculty", "Faculty")
-                        .WithMany()
-                        .HasForeignKey("CreatedByFacultyId");
-
-                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("CreatedByStudentId");
-
                     b.Navigation("Blog");
-
-                    b.Navigation("Faculty");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.BlogTag", b =>
