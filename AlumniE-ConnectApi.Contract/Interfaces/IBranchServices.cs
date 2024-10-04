@@ -10,8 +10,7 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface IBranchServices
     {
-        public Task<Guid> AddBranch(string name, Guid collegeCourseId);
         public Task<List<GetBranchDto>> GetAllBranches();
-
+        public Task<Guid> AddBranch(string name, Guid collegeCourseId);
     }
 }

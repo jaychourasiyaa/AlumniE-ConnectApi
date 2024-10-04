@@ -18,24 +18,6 @@ namespace AlumniE_ConnectApi.Controllers
         {
             this.branchServices = branchServices;
         }
-        [HttpPost("{collegeCourseId:guid}/{name}")]
-        public async Task<ActionResult<ApiResponse<Guid>>> Add(Guid collegeCourseId, string name)
-        {
-            var response = new ApiResponse<Guid>();
-            try
-            {
-                var branchId = await branchServices.AddBranch(name, collegeCourseId);
-                response.Message = "Branch Added Successfully";
-                response.Data = branchId;
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return BadRequest(response);
-            }
-        }
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<GetBranchDto>>>> Get()
         {
@@ -45,6 +27,25 @@ namespace AlumniE_ConnectApi.Controllers
                 var branches = await branchServices.GetAllBranches();
                 response.Data = branches;
                 response.Message = "Fetched all branches";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("{collegeCourseId:guid}/{name}")]
+        public async Task<ActionResult<ApiResponse<Guid>>> Add(Guid collegeCourseId, string name)
+        {
+            var response = new ApiResponse<Guid>();
+            try
+            {
+                var branchId = await branchServices.AddBranch(name, collegeCourseId);
+                response.Message = "Branch Added Successfully";
+                response.Data = branchId;
                 return Ok(response);
             }
             catch (Exception ex)

@@ -43,13 +43,13 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("Approve")]
-        public async Task<ActionResult<ApiResponse<bool>>> Approve(Guid eventId)
+        [HttpPost("Approve/{id:guid}")]
+        public async Task<ActionResult<ApiResponse<bool>>> Approve(Guid id)
         {
             var response = new ApiResponse<int>();
             try
             {
-                var result = await eventServices.ApproveEvent(eventId);
+                var result = await eventServices.ApproveEvent(id);
                 if (result == -1)
                 {
                     response.Message = "Event Can be only approved by Admin or Faculty";

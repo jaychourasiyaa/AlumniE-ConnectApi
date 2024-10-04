@@ -1,15 +1,11 @@
 ﻿using AlumniE_ConnectApi.Contract.Interfaces;
+using AlumniE_ConnectApi.Contract.Utility;
 using AlumniE_ConnectApi.Provider.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 namespace AlumniE_ConnectApi.Provider
 {
     public class Bootstrapper
@@ -31,11 +27,16 @@ namespace AlumniE_ConnectApi.Provider
             builder.Services.AddScoped<ITagServices, TagServices>();
             builder.Services.AddScoped<IBlogServices, BlogServices>();
             builder.Services.AddScoped<IBlogCommentServices, BlogCommentServices>();
+            builder.Services.AddScoped<ISkillServices, SkillServices>();
             //swagger services
             builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Alumni E-Connect Api's", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Alumni E-Connect Api's",
+                    Version = "v1"
+                });
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -47,22 +48,33 @@ namespace AlumniE_ConnectApi.Provider
                 });
 
                 opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type=ReferenceType.SecurityScheme,
-                            Id="Bearer"
-                        }
-                    },
-                    new string[]{}
-                }
-            });
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
                 //opt.OperationFilter<CustomHeaderSwaggerAttribute>();
-
             });
+
+            //cloudinary
+            builder.Services.Configure<CloudinarySettingsConfiguration>(builder.Configuration.GetSection("Cloudinary"));
+
+            // Register Cloudinary
+            builder.Services.AddSingleton(provider =>
+            {
+                var config = provider.GetRequiredService<IOptions<CloudinarySettingsConfiguration>>().Value;
+                return new Cloudinary(new Account(config.CloudName, config.ApiKey, config.ApiSecret));
+            });
+            builder.Services.AddScoped<ImageServices>();
+
         }
 
     }

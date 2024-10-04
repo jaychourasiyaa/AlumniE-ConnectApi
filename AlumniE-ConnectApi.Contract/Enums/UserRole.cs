@@ -8,7 +8,7 @@ namespace AlumniE_ConnectApi.Contract.Enums
 {
     public enum UserRole : byte
     {
-        User = 0,
+        Student = 0,
         Faculty = 1,
         Admin = 2
     }

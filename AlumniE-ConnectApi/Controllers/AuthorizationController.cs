@@ -1,4 +1,5 @@
-﻿using AlumniE_ConnectApi.Contract.Interfaces;
+﻿using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,11 +17,11 @@ namespace AlumniE_ConnectApi.Controllers
             this.authorizationService = authorizationServices;
         }
         [HttpPost]
-        public async Task<ActionResult<string>> Login(string gmail, string password, string role)
+        public async Task<ActionResult<string>> Login( UserLoginDto dto)
         {
             try
             {
-                string token = await authorizationService.LoginUser(gmail, password, role);
+                string token = await authorizationService.LoginUser(dto);
                 return token;
             }
             catch (Exception ex)

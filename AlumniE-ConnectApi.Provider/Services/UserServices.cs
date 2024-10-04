@@ -1,4 +1,5 @@
 ﻿
+using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Models;
@@ -99,6 +100,22 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
+        public async Task<List<IdAndNameDto>> GetAllAdmin()
+        {
+            try
+            {
+                var admins = await _dbContext.Admins.Select(a => new IdAndNameDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                }).ToListAsync();
+                return admins;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<bool> checkStudentAlreadyExists(string gmail)
         {
             try
@@ -193,27 +210,35 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (dto.Role == "Student")
+                if (jwtServices.Role == "Student")
                 {
-                    var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsActive);
+                    var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == jwtServices.Id && x.IsActive);
                     if (student == null)
                     {
                         return -1;
                     }
+                    /* if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != student.Id)
+                     {
+                         return -2;
+                     }*/
                     return await ChangeUserDetailsAsync(student, dto);
                 }
-                else if (dto.Role == "Faculty")
+                else if (jwtServices.Role == "Faculty")
                 {
-                    var faculty = await _dbContext.Faculties.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsActive);
+                    var faculty = await _dbContext.Faculties.FirstOrDefaultAsync(x => x.Id == jwtServices.Id && x.IsActive);
                     if (faculty == null)
                     {
                         return -1;
                     }
+                    /* if (jwtServices.Role != "Admin" && jwtServices.Id != faculty.Id)
+                     {
+                         return -2;
+                     }*/
                     return await ChangeUserDetailsAsync(faculty, dto);
                 }
                 else
                 {
-                    return -3;
+                    return -4;
                 }
             }
             catch (Exception ex)
@@ -221,28 +246,52 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<int> ChangeUserPassword(ChangePasswordDto dto, string role)
+        public async Task<int> ChangeUserPassword(ChangePasswordDto dto)
         {
             try
             {
-                if (role == "Student")
+                if (jwtServices.Role == "Student")
                 {
-                    var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
-                    return await ChangePasswordAsync(student, dto.PreviousPassword, dto.NewPassword);
+                    var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
+                    if (student == null)
+                    {
+                        return -1;
+                    }
+                    /*if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != student.Id)
+                    {
+                        return -2;
+                    }*/
+                    return await ChangePasswordAsync(student, dto.OldPassword, dto.NewPassword);
                 }
-                else if (role == "Facutly")
+                else if (jwtServices.Role == "Faculty")
                 {
-                    var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
-                    return await ChangePasswordAsync(faculty, dto.PreviousPassword, dto.NewPassword);
+                    var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
+                    if (faculty == null)
+                    {
+                        return -1;
+                    }
+                    /* if (jwtServices.Role != "Admin" && jwtServices.Id != faculty.Id)
+                     {
+                         return -2;
+                     }*/
+                    return await ChangePasswordAsync(faculty, dto.OldPassword, dto.NewPassword);
                 }
-                else if (role == "Admin")
+                else if (jwtServices.Role == "Admin")
                 {
-                    var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
-                    return await ChangePasswordAsync(admin, dto.PreviousPassword, dto.NewPassword);
+                    var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
+                    if (admin == null)
+                    {
+                        return -1;
+                    }
+                    /* if (jwtServices.Id != admin.Id)
+                     {
+                         return -2;
+                     }*/
+                    return await ChangePasswordAsync(admin, dto.OldPassword, dto.NewPassword);
                 }
                 else
                 {
-                    return -4;
+                    return -5;
                 }
 
             }
@@ -255,36 +304,48 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                if (dto.Role == "Student")
+                if (jwtServices.Role == "Student")
                 {
-                    var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
+                    var student = await _dbContext.Students.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (student == null)
                     {
                         return -1;
                     }
+                    /*if (jwtServices.Role != "Admin" && jwtServices.Role != "Faculty" && jwtServices.Id != student.Id)
+                    {
+                        return -2;
+                    }*/
                     student.ProfilePictureUrl = dto.Url;
                 }
-                else if (dto.Role == "Facutly")
+                else if (jwtServices.Role == "Faculty")
                 {
-                    var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
+                    var faculty = await _dbContext.Faculties.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if ((faculty == null))
                     {
                         return -1;
                     }
+                    /*if (jwtServices.Role != "Admin" && jwtServices.Id != faculty.Id)
+                    {
+                        return -2;
+                    }*/
                     faculty.ProfilePictureUrl = dto.Url;
                 }
-                else if (dto.Role == "Admin")
+                else if (jwtServices.Role == "Admin")
                 {
-                    var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == dto.Id).FirstOrDefaultAsync();
+                    var admin = await _dbContext.Admins.Where(s => s.IsActive && s.Id == jwtServices.Id).FirstOrDefaultAsync();
                     if (admin == null)
                     {
                         return -1;
                     }
+                    /*if (jwtServices.Id != admin.Id)
+                    {
+                        return -2;
+                    }*/
                     admin.ProfilePictureUrl = dto.Url;
                 }
                 else
                 {
-                    return -2;
+                    return -3;
                 }
                 await _dbContext.SaveChangesAsync(); return 1;
             }
@@ -293,51 +354,39 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        private async Task<int> ChangePasswordAsync<T>(T user, string? previousPassword, string newPassword)
+        private async Task<int> ChangePasswordAsync<T>(T user, string? oldPassword, string newPassword)
         {
             try
             {
-                if (user == null)
-                {
-                    return -1; // User not found
-                }
-
-                // Use reflection to get the IsActive property
-                var isActiveProperty = typeof(T).GetProperty("IsActive");
-                var isActive = (bool?)isActiveProperty?.GetValue(user);
-                if (isActive != true)
-                {
-                    return -1; // User is inactive
-                }
-
                 // Use reflection to get the Password property
                 var passwordProperty = typeof(T).GetProperty("Password");
                 var currentPassword = (string?)passwordProperty?.GetValue(user);
 
-                if (!string.IsNullOrEmpty(previousPassword)) // User wants to change the password
+                if (!string.IsNullOrEmpty(oldPassword)) // User wants to change the password
                 {
-                    if (currentPassword != previousPassword)
+                    if (currentPassword != oldPassword)
                     {
-                        return -2; // Previous password is incorrect
+                        return -3; //old password is incorrect
                     }
                     if (currentPassword == newPassword)
                     {
-                        return -3; // New password is the same as the old password
+                        return -4; // New password is the same as the old password
                     }
-                    // Update the password using reflection
+
                     passwordProperty?.SetValue(user, newPassword);
                 }
                 else // User wants to reset the password (forgot password)
                 {
                     if (currentPassword == newPassword)
                     {
-                        return -3; // New password is the same as the old password
+                        return -4; // New password is the same as the old password
                     }
+
                     // Update the password using reflection
                     passwordProperty?.SetValue(user, newPassword);
                 }
                 await _dbContext.SaveChangesAsync();
-                return 1; // Success
+                return 1;
             }
             catch (Exception ex)
             {
@@ -348,7 +397,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-                int result = -2;
+                int result = -3;
                 if (!string.IsNullOrEmpty(dto.Name))
                 {
                     var nameProperty = typeof(T).GetProperty("Name");
@@ -376,7 +425,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     var contactNumberProperty = typeof(T).GetProperty("ContactNumber");
                     var contactNumberProperyValue = contactNumberProperty != null ? contactNumberProperty.GetValue(user) : null;
                     var contactNumber = contactNumberProperyValue != null ? contactNumberProperyValue.ToString() : null;
-                    if(contactNumber != dto.ContactNumber)
+                    if (contactNumber != dto.ContactNumber)
                     {
                         contactNumberProperty?.SetValue(user, dto.ContactNumber);
                         result = 1;
@@ -398,7 +447,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                     var addressProperty = typeof(T).GetProperty("Address");
                     var addressProperyValue = addressProperty != null ? addressProperty.GetValue(user) : null;
                     var address = addressProperyValue != null ? addressProperyValue.ToString() : null;
-                    if( address != dto.Address)
+                    if (address != dto.Address)
                     {
                         addressProperty?.SetValue(user, dto.Address);
                         result = 1;
@@ -409,9 +458,20 @@ namespace AlumniE_ConnectApi.Provider.Services
                     var stateProperty = typeof(T).GetProperty("StateId");
                     var statePropertyValue = stateProperty != null ? stateProperty.GetValue(user) : null;
                     var stateId = statePropertyValue != null ? statePropertyValue.ToString() : null;
-                    if(stateId != dto.StatedId.ToString())
+                    if (stateId != dto.StatedId.ToString())
                     {
                         stateProperty?.SetValue(user, dto.StatedId);
+                        result = 1;
+                    }
+                }
+                if (!string.IsNullOrEmpty(dto.ProfileHeadline))
+                {
+                    var ProfileHeadlinePropery = typeof(T).GetProperty("ProfileHeadline");
+                    var ProfileHeadlineProperyValue = ProfileHeadlinePropery != null ? ProfileHeadlinePropery.GetValue(user) : null;
+                    var ProfileHeadline = ProfileHeadlineProperyValue != null ? ProfileHeadlineProperyValue.ToString() : null;
+                    if (ProfileHeadline != dto.ProfileHeadline)
+                    {
+                        ProfileHeadlinePropery?.SetValue(user, dto.ProfileHeadline);
                         result = 1;
                     }
                 }
@@ -423,7 +483,49 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-
-
+        public async Task<int> Delete_Student(Guid id)
+        {
+            try
+            {
+                var student = await _dbContext.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
+                if (student == null)
+                {
+                    return -1;
+                }
+                else if (jwtServices.Role != "Faculty" && jwtServices.Role != "Admin" && jwtServices.Id != student.Id)
+                {
+                    return -2;
+                }
+                student.IsActive = false;
+                await _dbContext.SaveChangesAsync();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> Delete_Faculty(Guid id)
+        {
+            try
+            {
+                var faculty = await _dbContext.Faculties.Where(s => s.Id == id).FirstOrDefaultAsync();
+                if (faculty == null)
+                {
+                    return -1;
+                }
+                else if (jwtServices.Role != "Admin" && jwtServices.Id != faculty.Id)
+                {
+                    return -2;
+                }
+                faculty.IsActive = false;
+                await _dbContext.SaveChangesAsync();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

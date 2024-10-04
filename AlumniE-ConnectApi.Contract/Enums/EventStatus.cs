@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlumniE_ConnectApi.Contract.Enums
 {
-    public enum EventStatus
+    public enum EventStatus : byte
     {
         Created =0,
         Approved =1

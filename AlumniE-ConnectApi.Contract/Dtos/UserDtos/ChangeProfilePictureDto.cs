@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlumniE_ConnectApi.Contract.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace AlumniE_ConnectApi.Contract.Dtos.UserDtos
 {
     public class ChangeProfilePictureDto
     {
-        [Required (ErrorMessage = "Role is a required field")]
-        public string Role {  get; set; }
+        /*[Required(ErrorMessage = "Role is a required field")]
+        public UserRole Role { get; set; } = UserRole.Student;
         [Required(ErrorMessage = "Id is a required field")]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; }*/
         [Required(ErrorMessage = "Url is a required field")]
         public string Url { get; set; }
     }

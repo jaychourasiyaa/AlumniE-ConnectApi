@@ -26,7 +26,7 @@ namespace AlumniE_ConnectApi.Provider.Services
         }
 
         
-        public async Task<bool> SendEmail(string recipientEmail, string name)
+        public async Task<bool> SendEmail(string recipientEmail, string name, bool forgetPassword)
         {
             try
             {
@@ -67,7 +67,38 @@ namespace AlumniE_ConnectApi.Provider.Services
     <p>
         Warm regards,<br>
         Alumni E-Connect Team
+    </p>";      
+                if (forgetPassword)
+                {
+                    body = $@"
+    <p>Dear {name},</p>
+    <br>
+    <p>
+        You can use the following one-time password (OTP) to forget your Alumni E-Connect account Password:
+    </p>
+    <br>
+    <p><strong>OTP:</strong> {otp_Code}</p>
+    <br>
+    <p><strong>Note:</strong> OTP is valid for next 5 minutes</p>
+    <br>
+    <p>
+        Please visit our website at <a href='http://www.google.com'>websitelink</a>
+    </p>
+    <br>
+    <p>
+        Thank you for choosing Alumni E-Connect. We are thrilled to welcome you as a valued member of our community and are committed to offering you a seamless experience.
+    </p>
+    <br>
+    <p>
+        Please feel free to contact our support team.
+    </p>
+    <br>
+    <p>
+    <p>
+        Warm regards,<br>
+        Alumni E-Connect Team
     </p>";
+                }
                 var email = new MimeMessage();
                 email.From.Add(new MailboxAddress("Alumni E-Connect", emailConfiguration.Username));
                 email.To.Add(new MailboxAddress("", recipientEmail));

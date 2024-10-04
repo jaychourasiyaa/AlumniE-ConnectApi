@@ -1,4 +1,5 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos;
+using AlumniE_ConnectApi.Contract.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,11 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface ITagServices
     {
-        public Task<Guid> AddTag(string name);
         public Task<List<IdAndNameDto>> GetAllTags();
+        public Task<List<IdAndNameDto>> GetAllTagsStartsWith(string startsWith);
+        public Task<int> AddTags(List<string> tags, Guid blogId);
+        public Task<int> AddTagsToBlog(List<Guid> tags,Guid blogId);
+        public Task<int> DeleteTagFromBlog(Guid blogId, Guid TagId);
+
     }
 }

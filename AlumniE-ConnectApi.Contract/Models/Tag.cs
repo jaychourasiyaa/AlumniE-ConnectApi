@@ -10,5 +10,6 @@ namespace AlumniE_ConnectApi.Contract.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public ICollection<Blog> Blogs { get; set; }
     }
 }

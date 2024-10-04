@@ -16,10 +16,18 @@ namespace AlumniE_ConnectApi.Contract.Responses
             Success = true;
             Message = null;
         }
-        public ApiResponse(bool success, string? message, T data)
+        public ApiResponse( bool success, string? message, T data)
         {
             Success = success;
             Message = message;
+            Data = data;
+        }
+        public ApiResponse(string message)
+        {
+            Message = message;
+        }
+        public ApiResponse(T data)
+        {
             Data = data;
         }
     }

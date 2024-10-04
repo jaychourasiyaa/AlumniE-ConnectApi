@@ -11,7 +11,7 @@ namespace AlumniE_ConnectApi.Contract.Models
     public class Faculty : BaseUser
     {
         public Guid Id { get; set; }
-        public string? ProfilePictureUrl { get; set; } = "https://cdn-icons-png.flaticon.com/512/2215/2215500.png";
+        public string ProfilePictureUrl { get; set; } = "https://cdn-icons-png.flaticon.com/512/2215/2215500.png";
         public required int TeachingSince { get; set; }
     }
 }

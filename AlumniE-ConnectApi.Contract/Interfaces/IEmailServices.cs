@@ -8,7 +8,7 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface IEmailServices
     {
-        public Task<bool> SendEmail(string recipientEmail, string name);
+        public Task<bool> SendEmail(string recipientEmail, string name, bool forgetPassword);
         public Task<bool> VerifyOtp(string recipientEmail, string otp);
     }
 }

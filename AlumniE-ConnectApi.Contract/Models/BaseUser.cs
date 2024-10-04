@@ -14,6 +14,7 @@ namespace AlumniE_ConnectApi.Contract.Models
         public required string Password { get; set; }
         public string? SecondaryMail { get; set; }
         public string? Address { get; set; }
+        public string? ProfileHeadline { get; set; }
         public string? Bio { get; set; }
         public string? ContactNumber { get; set; }
         public bool IsActive { get; set; } = true;

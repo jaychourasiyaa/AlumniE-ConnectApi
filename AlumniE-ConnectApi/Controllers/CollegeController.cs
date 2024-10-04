@@ -20,23 +20,6 @@ namespace AlumniE_ConnectApi.Controllers
         {
             this.collegeServices = collegeServices;
         }
-        [HttpPost]
-        public async Task<ActionResult<ApiResponse<Guid>>> Add(AddCollegeDto dto)
-        {
-            var response = new ApiResponse<Guid>();
-            try
-            {
-                var collegeId = await collegeServices.AddCollege(dto);
-                response.Data = collegeId;
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return BadRequest(response);
-            }
-        }
         [HttpGet("GetAllCollegeByAdminId/{adminId:guid}")]
         public async Task<ActionResult<ApiResponse<List<GetCollegeDto>>>> Get(Guid adminId)
         {
@@ -54,43 +37,8 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("AddCourse/{courseId:guid}/{collegeId:guid}")]
-        public async Task<ActionResult<ApiResponse<Guid>>> AddCourse(Guid courseId, Guid collegeId)
-        {
-            var response = new ApiResponse<Guid>();
-            try
-            {
-                var result = await collegeServices.AddProvidedCourse(courseId, collegeId);
-                response.Data = result;
-                response.Message = "Course Added Successfully in College";
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return BadRequest(response);
-            }
-        }
-        [HttpPost("AddBranch/{collegeCourseId:guid}/{branchId:guid}")]
-        public async Task<ActionResult<ApiResponse<Guid>>> AddBranch(Guid collegeCourseId, Guid branchId)
-        {
-            var response = new ApiResponse<Guid>();
-            try
-            {
-                var result = await collegeServices.AddProvidedBranch(collegeCourseId, branchId);
-                response.Data = result;
-                response.Message = "Branch Added Successfully in Course Under College";
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return BadRequest(response);
-            }
-        }
-        [HttpGet("GetCourse/{collegeId:guid}")]
+
+        [HttpGet("GetCollegeCourse/{collegeId:guid}")]
         public async Task<ActionResult<ApiResponse<List<GetCollegeCourseDto>>>> GetCourses(Guid collegeId)
         {
             var response = new ApiResponse<List<GetCollegeCourseDto>>();
@@ -108,6 +56,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
+
         [HttpGet("GetCollegeByDomain/{domain}")]
         public async Task<ActionResult<ApiResponse<IdAndNameDto>>> GetCollegeByDomain(string domain)
         {
@@ -115,7 +64,7 @@ namespace AlumniE_ConnectApi.Controllers
             try
             {
                 var college = await collegeServices.GetCollegeNameAndIdByDomain(domain);
-                if( college == null)
+                if (college == null)
                 {
                     response.Message = "No college found with given college domain";
                     return NotFound(response);
@@ -128,9 +77,10 @@ namespace AlumniE_ConnectApi.Controllers
             {
                 response.Success = false;
                 response.Message = ex.Message;
-                return BadRequest(response) ;
+                return BadRequest(response);
             }
         }
+
         [HttpGet("GetBranchesUnderCollegeCourse/{collegeCourseId:Guid}")]
         public async Task<ActionResult<ApiResponse<List<IdAndNameDto>>>> GetCollegeCourseBranches(Guid collegeCourseId)
         {
@@ -154,6 +104,63 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<Guid>>> Add(AddCollegeDto dto)
+        {
+            var response = new ApiResponse<Guid>();
+            try
+            {
+                var collegeId = await collegeServices.AddCollege(dto);
+                response.Data = collegeId;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+                return BadRequest(response);
+            }
+        }
+        
+        [HttpPost("AddCourse/{courseId:guid}/{collegeId:guid}")]
+        public async Task<ActionResult<ApiResponse<Guid>>> AddCourse(Guid courseId, Guid collegeId)
+        {
+            var response = new ApiResponse<Guid>();
+            try
+            {
+                var result = await collegeServices.AddProvidedCourse(courseId, collegeId);
+                response.Data = result;
+                response.Message = "Course Added Successfully in College";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("AddBranch/{collegeCourseId:guid}/{branchId:guid}")]
+        public async Task<ActionResult<ApiResponse<Guid>>> AddBranch(Guid collegeCourseId, Guid branchId)
+        {
+            var response = new ApiResponse<Guid>();
+            try
+            {
+                var result = await collegeServices.AddProvidedBranch(collegeCourseId, branchId);
+                response.Data = result;
+                response.Message = "Branch Added Successfully in Course Under College";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+                return BadRequest(response);
+            }
+        }
+        
 
 
 

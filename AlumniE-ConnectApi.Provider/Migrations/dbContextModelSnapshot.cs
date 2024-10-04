@@ -48,6 +48,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePictureUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -64,6 +65,10 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedByName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -75,9 +80,12 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tags")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TagId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -85,7 +93,16 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserProfileHeadline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserProfilePictureUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("Blogs");
                 });
@@ -120,6 +137,27 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.HasIndex("BlogId");
 
                     b.ToTable("BlogsComments");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.BlogTag", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("BlogId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("BlogsTags");
                 });
 
             modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.Branch", b =>
@@ -326,8 +364,8 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -427,7 +465,11 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileHeadline")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ProfilePictureUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondaryMail")
@@ -592,7 +634,11 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileHeadline")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ProfilePictureUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondaryMail")
@@ -648,15 +694,60 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.ToTable("Universities");
                 });
 
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.UserSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("UsersSkills");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.Blog", b =>
+                {
+                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Tag", null)
+                        .WithMany("Blogs")
+                        .HasForeignKey("TagId");
+                });
+
             modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.BlogComment", b =>
                 {
                     b.HasOne("AlumniE_ConnectApi.Contract.Models.Blog", "Blog")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Blog");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.BlogTag", b =>
+                {
+                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Blog", "Blog")
+                        .WithMany("Tags")
+                        .HasForeignKey("BlogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Blog");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.College", b =>
@@ -815,6 +906,29 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("State");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.UserSkill", b =>
+                {
+                    b.HasOne("AlumniE_ConnectApi.Contract.Models.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.Blog", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("AlumniE_ConnectApi.Contract.Models.Tag", b =>
+                {
+                    b.Navigation("Blogs");
                 });
 #pragma warning restore 612, 618
         }

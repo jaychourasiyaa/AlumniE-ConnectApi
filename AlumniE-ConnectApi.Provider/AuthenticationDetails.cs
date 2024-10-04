@@ -2,12 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AlumniE_ConnectApi.Provider
 {
@@ -28,8 +23,15 @@ namespace AlumniE_ConnectApi.Provider
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
             });
-            
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("FacultyPolicy", policy => policy.RequireRole("Faculty"));
+                options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
+                options.AddPolicy("SuperAdminPolicy", policy => policy.RequireRole("SuperAdmin"));
+            });
+
         }
-        
+
     }
 }

@@ -1,10 +1,13 @@
 ﻿
+using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AlumniE_ConnectApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -17,7 +20,7 @@ namespace AlumniE_ConnectApi.Controllers
             this.userServices = userServices;
             this.emailServices = emailServices;
         }
-
+        //[Authorize]
         [HttpGet("GetStudentDetails/{id:guid}")]
         public async Task<ActionResult<ApiResponse<GetStudentDto>>> GetStudent(Guid id)
         {
@@ -41,6 +44,8 @@ namespace AlumniE_ConnectApi.Controllers
                 return Ok(response);
             }
         }
+
+        //[Authorize]
         [HttpGet("GetFacultyDetails/{id:guid}")]
         public async Task<ActionResult<ApiResponse<GetFacultyDto>>> GetFaculty(Guid id)
         {
@@ -64,13 +69,36 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpGet("GetAllAdmin")]
+        public async Task<ActionResult<ApiResponse<List<IdAndNameDto>>>> GetAdmin()
+        {
+            var response = new ApiResponse<List<IdAndNameDto>>();
+            try
+            {
+                var admin = await userServices.GetAllAdmin();
+                if (admin == null)
+                {
+                    response.Message = "No Admin Found";
+                    return NotFound(response);
+                }
+                response.Message = "Admins Fetched";
+                response.Data = admin;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
         [HttpPost("SendOtp/{gmail}/{name}")]
-        public async Task<ActionResult<ApiResponse<bool>>> Send(string gmail, string name)
+        public async Task<ActionResult<ApiResponse<bool>>> Send(string gmail, string name , bool forgetPassword)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await emailServices.SendEmail(gmail, name);
+                var result = await emailServices.SendEmail(gmail, name , forgetPassword);
                 response.Message = "OTP Sent Successfully";
                 response.Data = result;
                 return Ok(response);
@@ -82,6 +110,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
+
         [HttpPost("Verify/{gmail}/{otp}")]
         public async Task<ActionResult<ApiResponse<bool>>> Verify(string gmail, string otp)
         {
@@ -105,6 +134,7 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
+
         [HttpPost("AddStudent")]
         public async Task<ActionResult<Guid>> AddStudent(AddStudentDto dto)
         {
@@ -118,6 +148,8 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //[Authorize(Roles = "Admin")]
         [HttpPost("AddFaculty")]
         public async Task<ActionResult<Guid>> AddFaculty(AddFacultyDto dto)
         {
@@ -131,6 +163,8 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //[Authorize(Roles = "SuperAdmin")]
         [HttpPost("AddAdmin")]
         public async Task<ActionResult<Guid>> AddAdmin(AddAdminDto dto)
         {
@@ -144,7 +178,9 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("UpdateUserDetails")]
+
+        //[Authorize]
+        [HttpPut("UpdateUserDetails")]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateUser(UpdateUserDto dto)
         {
             var response = new ApiResponse<bool>();
@@ -157,13 +193,19 @@ namespace AlumniE_ConnectApi.Controllers
                     response.Data = false;
                     return NotFound(response);
                 }
-                else if( result == -2)
+                /*else if( result == -2)
                 {
-                    response.Message = "No changes to update";
+                    response.Message = "User not accessible to update";
                     response.Data = false;
                     return Conflict(response);
-                }
+                }*/
                 else if( result == -3)
+                {
+                    response.Message = "No Changes to update";
+                    response.Data = false;
+                    return NotFound(response);
+                }
+                else if( result == -4)
                 {
                     response.Message = "Invalid Role";
                     response.Data = false;
@@ -180,32 +222,39 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("ChangePassword/{role}")]
-        public async Task<ActionResult<ApiResponse<bool>>> ChangePassword(ChangePasswordDto dto, string role)
+        //[Authorize]
+        [HttpPut("ChangePassword")]
+        public async Task<ActionResult<ApiResponse<bool>>> ChangePassword(ChangePasswordDto dto)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await userServices.ChangeUserPassword(dto, role);
+                var result = await userServices.ChangeUserPassword(dto);
                 if (result == -1)
                 {
                     response.Message = "user not found";
                     response.Data = false;
                     return NotFound(response);
                 }
-                else if (result == -2)
+                /*else if (result == -2)
                 {
-                    response.Message = "old password is not correct";
+                    response.Message = "not accessible to change password";
+                    response.Data = false;
+                    return Conflict(response);
+                }*/
+                else if (result == -3)
+                {
+                    response.Message = "Old Password is wrong";
                     response.Data = false;
                     return Conflict(response);
                 }
-                else if (result == -3)
+                else if (result == -4)
                 {
                     response.Message = "Old Password and new Password cannot be same";
                     response.Data = false;
                     return Conflict(response);
                 }
-                else if (result == -4)
+                else if (result == -5)
                 {
                     response.Message = "Invalid Role";
                     response.Data = false;
@@ -222,7 +271,8 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost("ChangeProfilePicture")]
+        //[Authorize]
+        [HttpPut("ChangeProfilePicture")]
         public async Task<ActionResult<ApiResponse<bool>>> ChangeProfilePicture(ChangeProfilePictureDto dto)
         {
             var response = new ApiResponse<bool>();
@@ -235,7 +285,13 @@ namespace AlumniE_ConnectApi.Controllers
                     response.Data = false;
                     return NotFound(response);
                 }
-                else if (result == -2)
+               /* else if (result == -2)
+                {
+                    response.Message = "Not accessible to change profile picture";
+                    response.Data = false;
+                    return Conflict(response);
+                }*/
+                else if (result == -3)
                 {
                     response.Message = "Invalid Role";
                     response.Data = false;
@@ -244,6 +300,56 @@ namespace AlumniE_ConnectApi.Controllers
                 response.Message = "Profile Picture Updated";
                 response.Data = true;
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        [HttpDelete("DeleteStudent/{id:guid}")]
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteStudent(Guid id)
+        {
+            var response = new ApiResponse<bool>();
+            try
+            {
+                var result = await userServices.Delete_Student(id);
+                if( result == -1)
+                {
+                    return NotFound(new ApiResponse<int>(true, "Student Id is invalid", 0));
+                }
+                else if( result == -2)
+                {
+                    return Conflict(new ApiResponse<int>(true, "Student is inaccessible to delete",0));
+
+                }
+                return Ok(new ApiResponse<int>(true, "Student Account Deactive / Deleted Successfully",1));
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        [HttpDelete("DeleteFaculty/{id:guid}")]
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteFaculty(Guid id)
+        {
+            var response = new ApiResponse<bool>();
+            try
+            {
+                var result = await userServices.Delete_Faculty(id);
+                if (result == -1)
+                {
+                    return NotFound(new ApiResponse<int>(true, "Faculty Id is invalid", 0));
+                }
+                else if (result == -2)
+                {
+                    return Conflict(new ApiResponse<int>(true, "Faculty is inaccessible to delete", 0));
+
+                }
+                return Ok(new ApiResponse<int>(true, "Faculty Account Deactive / Deleted Successfully", 1));
             }
             catch (Exception ex)
             {

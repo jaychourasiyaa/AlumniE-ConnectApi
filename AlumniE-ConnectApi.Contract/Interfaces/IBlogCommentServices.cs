@@ -9,6 +9,10 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface IBlogCommentServices
     {
-        public Task <Guid> AddComments(AddBlogCommmentDto dto);
+        public Task<List<GetBlogCommentsDto>> GetBlogComment(Guid blogId);
+
+        public Task <Guid> AddComment(AddBlogCommmentDto dto,Guid blogId);
+        public Task <int> UpdateComment(UpdateBlogCommentDto dto,Guid blogId);
+        public Task <int> Delete(Guid id);
     }
 }

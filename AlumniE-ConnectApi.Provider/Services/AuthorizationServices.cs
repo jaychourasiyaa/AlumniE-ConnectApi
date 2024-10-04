@@ -1,17 +1,13 @@
-﻿using AlumniE_ConnectApi.Contract.Interfaces;
-using AlumniE_ConnectApi.Contract.Models;
+﻿using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+using AlumniE_ConnectApi.Contract.Enums;
+using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Provider.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AlumniE_ConnectApi.Provider.Services
 {
@@ -24,7 +20,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             this._dbContext = _dbContext;
             this.configuration = configuration;
         }
-        public string GenerateToken(Guid id, string name, string role,string gmail)
+        public string GenerateToken(Guid id, string name, string role, string gmail)
         {
 
 
@@ -33,10 +29,10 @@ namespace AlumniE_ConnectApi.Provider.Services
             var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var claims = new[]
             {
-                 //new Claim(ClaimTypes.Role, employee.Role.ToString()),
+
                  new Claim("Name", name),
                  new Claim("Id", id.ToString()),
-                 new Claim("Role" , role),
+                 new Claim(ClaimTypes.Role, role),
                  new Claim("Gmail",gmail)
 
              };
@@ -52,52 +48,52 @@ namespace AlumniE_ConnectApi.Provider.Services
 
             return tokenHandler.WriteToken(token);
         }
-        public async Task<string> LoginUser(string gmail, string password, string role)
+        public async Task<string> LoginUser(UserLoginDto dto)
         {
             try
             {   // trying to find alumni with given gmail and password
                 string token = "";
                 bool flag = false;
-                if (role == "Student")
+                if (dto.Role == UserRole.Student)
                 {
                     var student = await _dbContext.Students
-                                                  .Where(e => e.Gmail == gmail && e.Password == password)
-                                                  .FirstOrDefaultAsync();
+                        .Where(e => e.Gmail == dto.Email && e.Password == dto.Password)
+                        .FirstOrDefaultAsync();
                     if (student == null)
                     {
                         flag = true;
                     }
                     else
                     {
-                        token = GenerateToken(student.Id, student.Name, "Student",student.Gmail);
+                        token = GenerateToken(student.Id, student.Name, "Student", student.Gmail);
                     }
                 }
-                else if (role == "Faculty")
+                else if (dto.Role == UserRole.Faculty)
                 {
                     var faculty = await _dbContext.Faculties
-                                                  .Where(e => e.Gmail == gmail && e.Password == password)
-                                                  .FirstOrDefaultAsync();
+                        .Where(e => e.Gmail == dto.Email && e.Password == dto.Password)
+                        .FirstOrDefaultAsync();
                     if (faculty == null)
                     {
                         flag = true;
                     }
                     else
                     {
-                        token = GenerateToken(faculty.Id, faculty.Name, "Faculty",faculty.Gmail);
+                        token = GenerateToken(faculty.Id, faculty.Name, "Faculty", faculty.Gmail);
                     }
                 }
-                else if (role == "Admin")
+                else if (dto.Role == UserRole.Admin)
                 {
                     var admin = await _dbContext.Admins
-                                                  .Where(e => e.Gmail == gmail && e.Password == password)
-                                                  .FirstOrDefaultAsync();
+                        .Where(e => e.Gmail == dto.Email && e.Password == dto.Password)
+                        .FirstOrDefaultAsync();
                     if (admin == null)
                     {
                         flag = true;
                     }
                     else
                     {
-                        token = GenerateToken(admin.Id, admin.Name, "Admin",admin.Gmail);
+                        token = GenerateToken(admin.Id, admin.Name, "Admin", admin.Gmail);
                     }
                 }
                 else

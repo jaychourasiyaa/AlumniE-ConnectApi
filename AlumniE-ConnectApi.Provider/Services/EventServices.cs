@@ -6,6 +6,7 @@ using AlumniE_ConnectApi.Provider.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -108,7 +109,8 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     events = await query.Where( e=> e.Status == EventStatus.Approved || e.CreatedBy == jwtServices.Id).ToListAsync();
                 }
-                return events;
+                
+                return query.ToList();
                     
             }
             catch (Exception ex)

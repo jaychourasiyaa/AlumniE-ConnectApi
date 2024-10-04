@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 Name = NameClaim != null ? NameClaim : string.Empty;
                 var GmailClaim = user.Claims.FirstOrDefault(c => c.Type == "Gmail")?.Value;
                 Gmail = GmailClaim != null ? GmailClaim : string.Empty;
-                var RoleClaim = user.Claims.FirstOrDefault(c => c.Type == "Role")?.Value;
+                var RoleClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                 Role = RoleClaim != null ? RoleClaim : string.Empty;
                 
             }

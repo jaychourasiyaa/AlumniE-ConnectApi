@@ -1,4 +1,5 @@
-﻿using AlumniE_ConnectApi.Contract.Models;
+﻿using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+using AlumniE_ConnectApi.Contract.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface IAuthorizationServices
     {
-        public Task<string> LoginUser(string gmail, string password, string role);
+        public Task<string> LoginUser(UserLoginDto dto);
     }
 }

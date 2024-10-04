@@ -9,7 +9,8 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
 {
     public interface ICourseServices
     {
-        public Task<Guid> AddCourse(AddCourseDto dto, Guid collegeId);
         public Task<List<GetCourseDto>> GetAllCourses();
+        public Task<Guid> AddCourse(AddCourseDto dto, Guid collegeId);
+
     }
 }
