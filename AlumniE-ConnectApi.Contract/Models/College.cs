@@ -19,7 +19,7 @@ namespace AlumniE_ConnectApi.Contract.Models
         public required List<string> ContactNumber { get; set; }
         public required List<string> ContactEmails { get; set; }
         public required List<string> AuthorityNames { get; set; }
-        public int? NIRF_Ranking { get; set; }
+        public int? NIRFRanking { get; set; }
         public required string Accreditation { get; set; }
         public Guid? AdminId { get; set; }
         [ForeignKey(nameof(AdminId))]

@@ -1,7 +1,10 @@
-﻿using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
+﻿using AlumniE_ConnectApi.Contract.Dtos;
+using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
 using AlumniE_ConnectApi.Contract.Enums;
 using AlumniE_ConnectApi.Contract.Interfaces;
+using AlumniE_ConnectApi.Contract.Models;
 using AlumniE_ConnectApi.Provider.Database;
+using AlumniE_ConnectApi.Provider.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -48,10 +51,11 @@ namespace AlumniE_ConnectApi.Provider.Services
 
             return tokenHandler.WriteToken(token);
         }
-        public async Task<string> LoginUser(UserLoginDto dto)
+        public async Task<LoginResponseDto> LoginUser(UserLoginDto dto)
         {
             try
             {   // trying to find alumni with given gmail and password
+                var user = new UserDetailsDto();
                 string token = "";
                 bool flag = false;
                 if (dto.Role == UserRole.Student)
@@ -66,6 +70,12 @@ namespace AlumniE_ConnectApi.Provider.Services
                     else
                     {
                         token = GenerateToken(student.Id, student.Name, "Student", student.Gmail);
+                        user.Id = student.Id;
+                        user.Name = student.Name;
+                        user.Role = UserRole.Student;
+                        user.ImageUrl = student.ImageUrl;
+                        user.HeadLine = student.Headline;
+
                     }
                 }
                 else if (dto.Role == UserRole.Faculty)
@@ -80,6 +90,11 @@ namespace AlumniE_ConnectApi.Provider.Services
                     else
                     {
                         token = GenerateToken(faculty.Id, faculty.Name, "Faculty", faculty.Gmail);
+                        user.Id = faculty.Id;
+                        user.Name = faculty.Name;
+                        user.Role = UserRole.Faculty;
+                        user.ImageUrl = faculty.ImageUrl;
+                        user.HeadLine = faculty.Headline;
                     }
                 }
                 else if (dto.Role == UserRole.Admin)
@@ -93,23 +108,32 @@ namespace AlumniE_ConnectApi.Provider.Services
                     }
                     else
                     {
+                        user.Id = admin.Id;
+                        user.Name = admin.Name;
+                        user.Role = UserRole.Admin;
+                        user.ImageUrl = admin.ImageUrl;
                         token = GenerateToken(admin.Id, admin.Name, "Admin", admin.Gmail);
                     }
                 }
                 else
                 {
-                    return "Invalid Role";
+                    throw(new Exception( "Invalid Role"));
                 }
                 if (flag)
                 {
-                    return "Invalid Username and Password";
+                    throw(new Exception( "Invalid Username and Password"));
                 }
                 if (token == "")
                 {
-                    return "Unable to generate Token";
+                    throw (new Exception( "Unable to generate Token"));
                 }
                 // sending token along with some details
-                return token;
+                var loginResponseDto = new LoginResponseDto
+                {
+                    User = user,
+                    Token = token,
+                };
+                return loginResponseDto;
             }
             catch (Exception ex)
             {

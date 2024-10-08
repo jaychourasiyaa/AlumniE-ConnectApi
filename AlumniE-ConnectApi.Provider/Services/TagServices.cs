@@ -24,57 +24,31 @@ namespace AlumniE_ConnectApi.Provider.Services
             this._dbContext = _dbContext;
             this.jwtServices = jwtServices;
         }
-        public async Task<int> AddTags(List<string> tags, Guid blogId)
+        public async Task<string> AddTag(string tagName)
         {
             try
             {
-                if (jwtServices.Role == UserRole.Student)
+                tagName = tagName.Trim();
+                tagName = Regex.Replace(tagName, @"\s+", " ").Trim();
+                var tag = await _dbContext.Tags.Where(t => t.Name.ToUpper() == tagName.ToUpper()).FirstOrDefaultAsync();
+                if (tag != null)
                 {
-                    var student = await _dbContext.Students.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
-                    if (student == null)
-                    {
-                        return -1;
-                    }
+                    return "-1";
                 }
-                else if (jwtServices.Role == UserRole.Faculty)
+                var newTag = new Tag
                 {
-                    var faculty = await _dbContext.Faculties.Where(s => s.Id == jwtServices.Id).FirstOrDefaultAsync();
-                    if (faculty == null)
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    return -3;
-                }
-                var tagsId = new List<Guid>();
-                foreach (var name in tags)
-                {
-                    var tagName = name.Trim();
-                    tagName = Regex.Replace(tagName, @"\s+", " ").Trim();
-                    var tag = await _dbContext.Tags.Where(s => s.Name.ToUpper() == tagName.ToUpper()).FirstOrDefaultAsync();
-                    if (tag != null)
-                    {
-                        return -2;
-                    }
-                    var newTag = new Tag
-                    {
-                        Name = tagName,
-                    };
-                    await _dbContext.Tags.AddAsync(newTag);
-                    tagsId.Add(newTag.Id);
-                }
+                    Name = tagName,
+                };
+                await _dbContext.Tags.AddAsync(newTag);
                 await _dbContext.SaveChangesAsync();
-                await AddTagsToBlog(tagsId, blogId);
-                return 1;
+                return newTag.Id.ToString();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public async Task<int> AddTagsToBlog(List<Guid> tags, Guid blogId)
+       /* public async Task<int> AddTagsToBlog(List<Guid> tags, Guid blogId)
         {
             try
             {
@@ -115,8 +89,8 @@ namespace AlumniE_ConnectApi.Provider.Services
             {
                 throw ex;
             }
-        }
-        public async Task<int> DeleteTagFromBlog(Guid blogId, Guid tagId)
+        }*/
+       /* public async Task<int> DeleteTagFromBlog(Guid blogId, Guid tagId)
         {
             try
             {
@@ -134,7 +108,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 {
                     return -3;
                 }
-               
+
                 blog.UpdatedOn = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, "India Standard Time");
                 _dbContext.BlogsTags.Remove(blogTag);
                 await _dbContext.SaveChangesAsync();
@@ -144,7 +118,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             {
                 throw ex;
             }
-        }
+        }*/
         public async Task<List<IdAndNameDto>> GetAllTags()
         {
             try

@@ -4,6 +4,7 @@ using AlumniE_ConnectApi.Provider.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlumniE_ConnectApi.Provider.Migrations
 {
     [DbContext(typeof(dbContext))]
-    partial class dbContextModelSnapshot : ModelSnapshot
+    [Migration("20241008054115_updateddone")]
+    partial class updateddone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +77,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MediaUrls")
+                    b.Property<string>("ImageUrls")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte>("Role")
@@ -227,7 +230,7 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<string>("Links")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("NIRFRanking")
+                    b.Property<int?>("NIRF_Ranking")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -321,6 +324,9 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                     b.Property<string>("ApprovedByName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Banner_Url")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -345,14 +351,11 @@ namespace AlumniE_ConnectApi.Provider.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MediaUrls")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RegistrationDeadline")
+                    b.Property<DateTime>("Registration_Deadline")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")

@@ -14,7 +14,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.BlogDtos
         public Guid Id { get; set; }
         public string Description { get; set; }
         public List<IdAndNameDto> Tags { get; set; }
-        public List<string> ImageUrls { get; set; }
+        public List<string>? MediaUrls { get; set; }
         public  UserDetailsDto User { get; set; }
         ICollection<BlogComment> BlogComments { get; set; }
         public DateTime CreatedOn { get; set; }

@@ -1,4 +1,5 @@
 ﻿using AlumniE_ConnectApi.Contract.Dtos.BlogDtos;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
     {
         public Task<GetBlogDto> GetBlogById(Guid Id);
         public Task<List<GetBlogDto>> GetAllBlogs();
-        public Task<Guid> AddBlog(AddBlogDto dto);
-        public Task<int> UpdateBlogDescription(UpdateBlog dto,Guid blogId);
+        public Task<string> AddBlog(AddBlogDto dto);
+        public Task<int> UpdateBlog(UpdateBlogDto dto,Guid blogId);
         public Task<int> DeleteBlog(Guid Id);
     }
 }

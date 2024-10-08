@@ -3,9 +3,11 @@ using AlumniE_ConnectApi.Contract.Utility;
 using AlumniE_ConnectApi.Provider.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 namespace AlumniE_ConnectApi.Provider
 {
     public class Bootstrapper
@@ -28,15 +30,19 @@ namespace AlumniE_ConnectApi.Provider
             builder.Services.AddScoped<IBlogServices, BlogServices>();
             builder.Services.AddScoped<IBlogCommentServices, BlogCommentServices>();
             builder.Services.AddScoped<ISkillServices, SkillServices>();
+            builder.Services.AddScoped<IExperienceServices, ExperienceServices>();
+            builder.Services.AddScoped<IJobServices, JobServices>();
             //swagger services
             builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(opt =>
             {
+                opt.UseInlineDefinitionsForEnums();
                 opt.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Alumni E-Connect Api's",
                     Version = "v1"
                 });
+                //opt.OperationFilter<SwaggerFileOperationFilter>(); // Add this line
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -73,9 +79,38 @@ namespace AlumniE_ConnectApi.Provider
                 var config = provider.GetRequiredService<IOptions<CloudinarySettingsConfiguration>>().Value;
                 return new Cloudinary(new Account(config.CloudName, config.ApiKey, config.ApiSecret));
             });
-            builder.Services.AddScoped<ImageServices>();
+            builder.Services.AddScoped<CloudinaryServices>();
 
         }
+        public class SwaggerFileOperationFilter : IOperationFilter
+        {
+            public void Apply(OpenApiOperation operation, OperationFilterContext context)
+            {
+                var fileParams = context.MethodInfo
+                    .GetParameters()
+                    .Where(p => p.ParameterType == typeof(IFormFile));
+
+                foreach (var param in fileParams)
+                {
+                    operation.RequestBody.Content["multipart/form-data"] = new OpenApiMediaType
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties =
+                    {
+                        [param.Name] = new OpenApiSchema
+                        {
+                            Type = "string",
+                            Format = "binary"
+                        }
+                    }
+                        }
+                    };
+                }
+            }
+        }
+
 
     }
 }

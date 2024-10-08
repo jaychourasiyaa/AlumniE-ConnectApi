@@ -17,15 +17,26 @@ namespace AlumniE_ConnectApi.Provider.Services
     {
         private readonly dbContext _dbContext;
         private readonly IJwtServices jwtServices;
-        public EventServices(dbContext _dbContext, IJwtServices jwtServices)
+        private readonly CloudinaryServices mediaServices;
+        public EventServices(dbContext _dbContext, IJwtServices jwtServices , CloudinaryServices imageServices)
         {
             this._dbContext = _dbContext;
             this.jwtServices = jwtServices;
+            this.mediaServices = imageServices;
         }
         public async Task<Guid> AddEvent(AddEventDto dto)
         {
             try
             {
+                var bannerUrls = new List<string>();
+                if (dto.MediaFiles != null && dto.MediaFiles.Count > 0)
+                {
+                    foreach (var banner in dto.MediaFiles)
+                    {
+                        var bannerUrl = await mediaServices.UploadMediaAsync(banner);
+                        bannerUrls.Add(bannerUrl);
+                    }
+                }
                 var newEvent = new Event
                 {
                     Name = dto.Name,
@@ -35,9 +46,11 @@ namespace AlumniE_ConnectApi.Provider.Services
                     StartTime = TimeOnly.FromDateTime(dto.StartDate),
                     EndTime = TimeOnly.FromDateTime(dto.EndDate),
                     Location = dto.Location,
-                    Registration_Deadline = dto.Registration_Deadline,
+                    RegistrationDeadline = dto.RegistrationDeadline,
                     CreatedByName = jwtServices.Name,
-                    CreatedBy = jwtServices.Id
+                    CreatedBy = jwtServices.Id,
+                    MediaUrls = bannerUrls
+
                 };
                 if (jwtServices.Role == UserRole.Admin || jwtServices.Role == UserRole.Faculty)
                 {
@@ -95,11 +108,11 @@ namespace AlumniE_ConnectApi.Provider.Services
                     StartTime = e.StartTime,
                     EndTime = e.EndTime,
                     Location = e.Location,
-                    Registration_Deadline = e.Registration_Deadline,
+                    RegistrationDeadline = e.RegistrationDeadline,
                     Status = e.Status,
-                    ApprovedBy_Name = e.ApprovedByName,
+                    ApprovedByName = e.ApprovedByName,
                     CreatedBy= e.CreatedBy,
-                    CreatedBy_Name = e.CreatedByName,
+                    CreatedByName = e.CreatedByName,
                     CreatedOn = e.CreatedOn,
                     UpdatedOn = e.UpdatedOn,
                     UpdatedBy = e.UpdatedBy

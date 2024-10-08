@@ -11,8 +11,8 @@ namespace AlumniE_ConnectApi.Contract.Models
     public class Blog
     {
         public Guid Id { get; set; }
-        public string Description { get; set; }
-        public List<string> ImageUrls { get; set; }
+        public string ? Description { get; set; }
+        public List<string> ? MediaUrls { get; set; }
       
         public Guid ?CreatedByStudentId { get; set; }
         [ForeignKey(nameof(CreatedByStudentId))]

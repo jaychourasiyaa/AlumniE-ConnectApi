@@ -12,9 +12,9 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
     {
         public Task<List<IdAndNameDto>> GetAllTags();
         public Task<List<IdAndNameDto>> GetAllTagsStartsWith(string startsWith);
-        public Task<int> AddTags(List<string> tags, Guid blogId);
-        public Task<int> AddTagsToBlog(List<Guid> tags,Guid blogId);
-        public Task<int> DeleteTagFromBlog(Guid blogId, Guid TagId);
+        public Task<string> AddTag(string tagName);
+     /*   public Task<int> AddTagsToBlog(List<Guid> tags,Guid blogId);
+        public Task<int> DeleteTagFromBlog(Guid blogId, Guid TagId);*/
 
     }
 }

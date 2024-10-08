@@ -8,12 +8,12 @@ namespace AlumniE_ConnectApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class MediaController : ControllerBase
     {
-        private readonly ImageServices imageServices;
-        public ImageController(ImageServices imageServices)
+        private readonly CloudinaryServices mediaServices;
+        public MediaController(CloudinaryServices imageServices)
         {
-            this.imageServices = imageServices;
+            this.mediaServices = imageServices;
         }
         [HttpPost]
         public async Task<ActionResult<ApiResponse<string>>> Add(IFormFile formFile)
@@ -21,14 +21,14 @@ namespace AlumniE_ConnectApi.Controllers
             var response = new ApiResponse<string>();
             try
             {
-                var imageUrl = await imageServices.UploadImage(formFile);
+                var imageUrl = await mediaServices.UploadMediaAsync(formFile);
                 if(imageUrl == "")
                 {
-                    response.Message = "Unable to upload image";
+                    response.Message = "Unable to upload media";
                     response.Data = imageUrl;
                     return Conflict(response);
                 }
-                response.Message = "Image Uploaded Successfully";
+                response.Message = "Media Uploaded Successfully";
                 response.Data = imageUrl;
                 return Ok(response);
             }

@@ -31,5 +31,6 @@ namespace AlumniE_ConnectApi.Provider.Database
         public DbSet<Tag> Tags { get; set; }
         public DbSet<BlogTag> BlogsTags { get; set; }
         public DbSet<UserSkill> UsersSkills { get; set; }
+        public DbSet<Job> Jobs { get; set; }
     }
 }

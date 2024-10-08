@@ -20,7 +20,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.CollegeDtos
         public required List<string> ContactNumber { get; set; }
         public required List<string> ContactEmails { get; set; }
         public required List<string> AuthorityNames { get; set; }
-        public int? NIRF_Ranking { get; set; }
+        public int? NIRFRanking { get; set; }
         public required string Accreditation { get; set; }
         public string Admin { get; set; }
         public Guid? CountryId { get; set; }

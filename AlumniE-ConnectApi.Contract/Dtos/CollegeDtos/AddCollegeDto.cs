@@ -54,7 +54,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.CollegeDto
         public List<string> AuthorityName { get; set; }
 
         [RegularExpression(@"^\d+$", ErrorMessage = "The NIRF ranking must contain only digits between 0 and 9.")]
-        public int? NIRF_Ranking { get; set; }
+        public int? NIRFRanking { get; set; }
 
         [Required(ErrorMessage = "Accreditation is a required field")]
         public string Accreditation { get; set; }

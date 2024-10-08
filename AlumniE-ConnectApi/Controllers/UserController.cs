@@ -3,11 +3,10 @@ using AlumniE_ConnectApi.Contract.Dtos;
 using AlumniE_ConnectApi.Contract.Dtos.UserDtos;
 using AlumniE_ConnectApi.Contract.Interfaces;
 using AlumniE_ConnectApi.Contract.Responses;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AlumniE_ConnectApi.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -29,7 +28,7 @@ namespace AlumniE_ConnectApi.Controllers
                 var info = await userServices.GetLoginUserInfo();
                 return Ok(new ApiResponse<UserDetailsDto>(true, "User Info fetched", info));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new ApiResponse<int>(false, ex.Message, 0));
             }
@@ -107,12 +106,12 @@ namespace AlumniE_ConnectApi.Controllers
             }
         }
         [HttpPost("SendOtp/{gmail}/{name}")]
-        public async Task<ActionResult<ApiResponse<bool>>> Send(string gmail, string name , bool forgetPassword)
+        public async Task<ActionResult<ApiResponse<bool>>> Send(string gmail, string name, bool forgetPassword)
         {
             var response = new ApiResponse<bool>();
             try
             {
-                var result = await emailServices.SendEmail(gmail, name , forgetPassword);
+                var result = await emailServices.SendEmail(gmail, name, forgetPassword);
                 response.Message = "OTP Sent Successfully";
                 response.Data = result;
                 return Ok(response);
@@ -201,7 +200,7 @@ namespace AlumniE_ConnectApi.Controllers
             try
             {
                 var result = await userServices.UpdateUser(dto);
-                if(result == -1)
+                if (result == -1)
                 {
                     response.Message = "No user found";
                     response.Data = false;
@@ -213,13 +212,13 @@ namespace AlumniE_ConnectApi.Controllers
                     response.Data = false;
                     return Conflict(response);
                 }*/
-                else if( result == -3)
+                else if (result == -3)
                 {
                     response.Message = "No Changes to update";
                     response.Data = false;
                     return NotFound(response);
                 }
-                else if( result == -4)
+                else if (result == -4)
                 {
                     response.Message = "Invalid Role";
                     response.Data = false;
@@ -299,12 +298,12 @@ namespace AlumniE_ConnectApi.Controllers
                     response.Data = false;
                     return NotFound(response);
                 }
-               /* else if (result == -2)
-                {
-                    response.Message = "Not accessible to change profile picture";
-                    response.Data = false;
-                    return Conflict(response);
-                }*/
+                /* else if (result == -2)
+                 {
+                     response.Message = "Not accessible to change profile picture";
+                     response.Data = false;
+                     return Conflict(response);
+                 }*/
                 else if (result == -3)
                 {
                     response.Message = "Invalid Role";
@@ -329,16 +328,16 @@ namespace AlumniE_ConnectApi.Controllers
             try
             {
                 var result = await userServices.Delete_Student(id);
-                if( result == -1)
+                if (result == -1)
                 {
                     return NotFound(new ApiResponse<int>(true, "Student Id is invalid", 0));
                 }
-                else if( result == -2)
+                else if (result == -2)
                 {
-                    return Conflict(new ApiResponse<int>(true, "Student is inaccessible to delete",0));
+                    return Conflict(new ApiResponse<int>(true, "Student is inaccessible to delete", 0));
 
                 }
-                return Ok(new ApiResponse<int>(true, "Student Account Deactive / Deleted Successfully",1));
+                return Ok(new ApiResponse<int>(true, "Student Account Deactive / Deleted Successfully", 1));
             }
             catch (Exception ex)
             {

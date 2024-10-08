@@ -20,7 +20,7 @@ namespace AlumniE_ConnectApi.Controllers
             this.jwtServices = jwtServices;
         }
         [HttpPost("Add")]
-        public async Task<ActionResult<ApiResponse<Guid>>> Add(AddEventDto dto)
+        public async Task<ActionResult<ApiResponse<Guid>>> Add([FromForm]AddEventDto dto)
         {
             var response = new ApiResponse<Guid>();
             try

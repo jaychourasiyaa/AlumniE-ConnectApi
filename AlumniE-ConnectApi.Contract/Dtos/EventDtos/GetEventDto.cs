@@ -17,14 +17,15 @@ namespace AlumniE_ConnectApi.Contract.Dtos.EventDtos
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public string Location { get; set; }
-        public DateTime Registration_Deadline { get; set; }
+        public DateTime RegistrationDeadline { get; set; }
         public EventStatus Status { get; set; } = EventStatus.Created;
-        public string? ApprovedBy_Name { get; set; }
-        public string CreatedBy_Name { get; set; }
+        public string? ApprovedByName { get; set; }
+        public string CreatedByName { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public Guid CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public Guid? UpdatedBy { get; set; }
+        public List<string>? MediaUrls { get; set; }
 
     }
 }
