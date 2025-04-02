@@ -29,7 +29,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             try
             {
                 var blogComments = new List<GetBlogCommentsDto>();
-                blogComments = await _dbContext.BlogsComments.Where(b => b.BlogId == blogId)
+                blogComments = await _dbContext.BlogsComments.Where(b => b.BlogId == blogId).OrderByDescending( x=> x.CreatedOn)
                     .Select(b => new GetBlogCommentsDto
                     {
                         CommentId = b.Id,

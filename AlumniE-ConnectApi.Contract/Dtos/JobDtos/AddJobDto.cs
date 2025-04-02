@@ -11,7 +11,7 @@ namespace AlumniE_ConnectApi.Contract.Dtos.JobDtos
     public class AddJobDto
     {
         [Required(ErrorMessage = "Job Tittle is a required field")]
-        public string Tittle { get; set; }
+        public string Title { get; set; }
         [Required(ErrorMessage = "Job Description is a required field")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Company Name is a required field")]

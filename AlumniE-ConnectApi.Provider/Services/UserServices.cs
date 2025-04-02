@@ -175,7 +175,10 @@ namespace AlumniE_ConnectApi.Provider.Services
         {
             try
             {
-
+                if(await CheckUsername(dto.Gmail))
+                {
+                    throw new Exception("username already exists");
+                }
                 var newStudent = new Student
                 {
                     Name = dto.Name,
@@ -566,5 +569,23 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
+        #region helper
+        public async Task<bool> CheckUsername(string gmail)
+        {
+            try
+            {
+                var student = await _dbContext.Students.AnyAsync(x => x.Gmail == gmail);
+                if(student)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }

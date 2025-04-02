@@ -24,7 +24,7 @@ namespace AlumniE_ConnectApi.Provider.Services
             {
                 var newJob = new Job
                 {
-                    Tittle = dto.Tittle,
+                    Tittle = dto.Title,
                     Description = dto.Description,
                     Deadline = dto.Deadline,
                     Location = dto.Location,
