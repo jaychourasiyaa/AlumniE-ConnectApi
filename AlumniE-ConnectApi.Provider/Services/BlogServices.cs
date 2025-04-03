@@ -49,7 +49,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                             Id = t.Tag.Id,
                             Name = t.Tag.Name,
                         }).ToList()
-                    }).ToListAsync();
+                    }).OrderByDescending(x=> x.Id).ToListAsync();
                 return blogs;
             }
             catch (Exception ex)

@@ -24,6 +24,7 @@ namespace AlumniE_ConnectApi.Contract.Interfaces
         public Task<int> ChangeUserProfilePicture(ChangeProfilePictureDto dto);
         public Task<int> Delete_Student(Guid id);
         public Task<int> Delete_Faculty(Guid id);
+        Task<bool> CheckStudentAlreadyExists(string gmail);
 
     }
 }

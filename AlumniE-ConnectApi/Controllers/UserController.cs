@@ -161,7 +161,19 @@ namespace AlumniE_ConnectApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPost("CheckRegisteredUser/{gmail}")]
+        public async Task<ActionResult<Guid>> CheckRegisteredUser(string gmail)
+        {
+            try
+            {
+                var result = await userServices.CheckStudentAlreadyExists(gmail);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         //[Authorize(Roles = "Admin")]
         [HttpPost("AddFaculty")]
         public async Task<ActionResult<Guid>> AddFaculty(AddFacultyDto dto)

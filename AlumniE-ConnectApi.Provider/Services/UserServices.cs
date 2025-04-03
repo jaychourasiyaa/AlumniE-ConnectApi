@@ -155,7 +155,7 @@ namespace AlumniE_ConnectApi.Provider.Services
                 throw ex;
             }
         }
-        public async Task<bool> checkStudentAlreadyExists(string gmail)
+        public async Task<bool> CheckStudentAlreadyExists(string gmail)
         {
             try
             {
